@@ -1,0 +1,15 @@
+<div ng-include="reportTabUrl" scope="" onload=""></div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h3>Dashboard</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-4" ng-repeat="(key, value) in timeEntryOverview">
+        <p align="center">Time spent {{ key }}</p>
+        <canvas id="pie" class="chart chart-doughnut"
+        chart-data="value.data" chart-labels="value.labels" chart-legend="true"></canvas>
+    </div>
+</div>

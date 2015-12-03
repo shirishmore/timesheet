@@ -1,0 +1,98 @@
+<div ng-include="reportTabUrl" scope="" onload=""></div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h3>Time report</h3>
+    </div>
+</div>
+
+<form ng-submit="filterTime(filterTimeFrm)" name="filterTimeFrm">
+    <div class="row" ng-show="showData">
+        <div class="col-sm-3">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label>Description</label>
+                <input type="description" name="description"
+                id="description" placeholder="Enter the description to search"
+                class="form-control" ng-model="filters.desc" />
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <label>Project</label>
+            <oi-select
+            oi-options="project.name for project in projects track by project.id"
+            ng-model="filters.project"
+            multiple
+            placeholder="Select Project"
+            ></oi-select>
+        </div>
+
+        <div class="col-sm-3">
+            <label>User</label>
+            <oi-select
+            oi-options="user.name for user in users track by user.id"
+            ng-model="filters.users"
+            multiple
+            placeholder="Select User"
+            ></oi-select>
+        </div>
+    </div>
+
+    <div class="row" ng-show="showData">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label>Start Date</label>
+                <datepicker date-format="yyyy, MMM d">
+                    <input ng-model="filters.startDate" type="text" class="form-control" placeholder="Enter start date" />
+                </datepicker>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label>End Date</label>
+                <datepicker date-format="yyyy, MMM d" date-min-limit="filters.startDate">
+                    <input ng-model="filters.endDate" type="text" class="form-control" placeholder="Enter end date" />
+                </datepicker>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <button class="btn btn-success">Filter</button>
+            <button class="btn btn-warning" ng-click="clearFilters()">Clear</button>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-sm-12" ng-hide="showData">
+        <i class="fa fa-refresh fa-spin fa-5x"></i>
+    </div>
+    <div class="col-sm-12 animated fadeIn" ng-show="showData">
+        <h6>Total time: {{totalTime}}</h6>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr class="success">
+                    <th>Desc</th>
+                    <th>User</th>
+                    <th>Project</th>
+                    <th>Client</th>
+                    <th nowrap>Created Date</th>
+                    <th>Hours</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ng-repeat="(key, entry) in timeEntries">
+                    <td>{{entry.description}}</td>
+                    <td>{{entry.username}}</td>
+                    <td>{{entry.projectName}}</td>
+                    <td>{{entry.clientName}}</td>
+                    <td>{{entry.createdDate}}</td>
+                    <td>{{entry.time}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

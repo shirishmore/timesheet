@@ -1,0 +1,30 @@
+.time-entry {
+  margin-bottom: 1em;
+  font-size: 1.3em;
+  padding: .3em; }
+  .time-entry h3 span {
+    float: right; }
+    .time-entry .item {
+      border-bottom: 1px solid #dddddd; }
+      .time-entry .item:hover {
+        display: block;
+        background-color: #efefef; }
+        .time-entry .item:hover .delete-tracker {
+          display: block; }
+          .time-entry .desc {
+            width: 70%;
+            display: block;
+            float: left; }
+            .time-entry .client, .time-entry .project {
+              font-weight: bold;
+              float: left; }
+              .time-entry .client:after {
+                content: " -"; }
+                .time-entry .time {
+                  margin-right: 1em; }
+                  .time-entry .time, .time-entry .delete-tracker {
+                    float: right; }
+                    .time-entry .delete-tracker {
+                      display: none; }
+
+                      /*# sourceMappingURL=app.css.map */
