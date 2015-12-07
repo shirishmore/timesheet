@@ -70,3 +70,5 @@ Route::resource('project', 'ProjectController');
 Route::resource('clients', 'ClientController');
 
 Route::resource('role', 'RoleController');
+
+App::bind('App\Services\Interfaces\SendMailInterface', 'App\Services\SESSendMail');

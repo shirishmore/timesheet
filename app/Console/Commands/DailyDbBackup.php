@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Interfaces\SendMailInterface;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -38,9 +39,9 @@ class DailyDbBackup extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(SendMailInterface $mail)
     {
-        $date = Carbon::now()->toDateString();
+        $date = Carbon::now()->format('Y-m-d_h-i');
         $user = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
         $database = env('DB_DATABASE');
@@ -50,9 +51,21 @@ class DailyDbBackup extends Command
 
         while ($process->isRunning()) {
             $s3 = Storage::disk('s3');
-            if ($s3->put('fw-labs-db/' . $date . ".sql", file_get_contents("{$date}.sql"))) {
-                unlink(public_path("{$date}.sql"));
-            }
+            $s3->put('fw-labs-db/' . $date . ".sql", file_get_contents("{$date}.sql"));
+            unlink("{$date}.sql");
+            $this->sendEmail($mail);
         }
+    }
+
+    private function sendEmail($mail)
+    {
+        $mail->mail([
+            'from' => 'amitav.roy@focalworks.in',
+            'fromName' => 'Amitav Roy',
+            'to' => 'amitav.roy@focalworks.in',
+            'toName' => 'Amitav Roy',
+            'subject' => 'Timesheet DB Backup taken',
+            'mailBody' => view('mails.dbbackup-mail'),
+        ]);
     }
 }
