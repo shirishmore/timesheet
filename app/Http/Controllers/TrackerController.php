@@ -104,7 +104,7 @@ class TrackerController extends Controller
                 ]);
             }
 
-            if ($request->input('estimate_id')) {
+            if ($request->input('estimate_id') && $request->input('estimate_id') != 0) {
                 DB::table('time_entry_estimates')->insert([
                     'time_entry_id' => $entry->id,
                     'estimate_id' => $request->input('estimate_id'),

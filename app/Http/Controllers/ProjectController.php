@@ -216,6 +216,7 @@ class ProjectController extends Controller
         }
 
         $output = '<label>Estimate</label><select name="estimate_id" class="form-control">';
+        $output .= "<option value='0'>NONE</option>";
 
         foreach ($estimates as $estimate) {
             $output .= "<option value='{$estimate->id}'>{$estimate->desc}</option>";
