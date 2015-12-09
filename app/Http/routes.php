@@ -52,8 +52,6 @@ Route::group(['middleware' => 'auth'], function () {
     get('role/delete/{id}', 'RoleController@destroy');
 
     Route::group(['prefix' => 'manager'], function () {
-        get('time-tracker-report', 'ManagerController@getTimeReport');
-        get('time-tracker-download', 'ManagerController@downloadReport');
         get('project-wise-download', 'ManagerController@downloadProjectWiseReport');
         get('project-wise-detailed-download', 'ManagerController@downloadProjectWiseDetailedReport');
         get('date-wise-download', 'ManagerController@downloadDateWiseReport');
@@ -63,8 +61,15 @@ Route::group(['middleware' => 'auth'], function () {
         get('time-report', 'ApiController@getFilterReport');
         get('get-user-list', 'ApiController@getUserList');
         get('get-project-list', 'ApiController@getProjectList');
+        get('get-project-by-id/{id}', 'ApiController@getProjectById');
         post('time-report-filter', 'ApiController@getFilterReportSearch');
         get('get-timeentry-by-date', 'ApiController@getTimeSheetEntryByDate');
+    });
+
+    Route::group(['prefix' => 'spa'], function () {
+        get('spa-dashboard', 'SpaController@index');
+        get('time-tracker-report', 'ManagerController@getTimeReport');
+        get('time-tracker-download', 'ManagerController@downloadReport');
     });
 });
 

@@ -7,9 +7,9 @@ myApp.factory('timeEntry', ['$http', function($http) {
         timeEntry.getUserList = function() {
             return $http.get(baseUrl + 'api/get-user-list');
         },
-        timeEntry.getProjectList = function() {
+        /*timeEntry.getProjectList = function() {
             return $http.get(baseUrl + 'api/get-project-list');
-        },
+        },*/
         timeEntry.getSearchResult = function(filterParams) {
             return $http({
                 headers: {

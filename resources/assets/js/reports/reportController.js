@@ -1,5 +1,5 @@
-myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout',
-    function($scope, timeEntry, $timeout) {
+myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projectFactory',
+    function($scope, timeEntry, $timeout, projectFactory) {
 
         timeEntry.getEntries().then(function(response) {
                 console.log('time entries', response.data);
@@ -18,7 +18,7 @@ myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout',
                 });
             })
             .then(function() {
-                timeEntry.getProjectList().then(function(response) {
+                projectFactory.getProjectList().then(function(response) {
                     console.log('project list', response.data);
                     angular.forEach(response.data, function(value, key) {
                         $scope.projects.push(value);

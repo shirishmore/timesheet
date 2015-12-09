@@ -63,7 +63,7 @@ class UserController extends Controller
 
             foreach ($userRoles as $role) {
                 if (in_array($role->role, $allowed)) {
-                    return Redirect::to('manager/time-tracker-report');
+                    return Redirect::to('spa/time-tracker-report');
                 }
             }
 

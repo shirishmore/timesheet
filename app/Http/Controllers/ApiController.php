@@ -25,7 +25,12 @@ class ApiController extends Controller
 
     public function getProjectList()
     {
-        return Project::with('client')->get();
+        return Project::with('client')->with('estimates')->get();
+    }
+
+    public function getProjectById($id)
+    {
+        return Project::where('id', $id)->with('client')->with('estimates')->first();
     }
 
     public function getFilterReportSearch(Request $request)

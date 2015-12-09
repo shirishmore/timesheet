@@ -26,8 +26,8 @@
             <li><a href="{{ url('time-tracker-add') }}">Add Entry</a></li>
             @if (Gate::allows('viewTrackerReport', new \App\TimeEntry))
             <li role="separator" class="divider"></li>
-            <li><a href="{{ url('manager/time-tracker-report') }}"><i class="fa fa-table"></i> Reports</a></li>
-            <li><a href="{{ url('manager/time-tracker-download') }}"><i class="fa fa-file-excel-o"></i> Download Report</a></li>
+            <li><a href="{{ url('spa/time-tracker-report') }}"><i class="fa fa-table"></i> Reports</a></li>
+            <li><a href="{{ url('spa/time-tracker-download') }}"><i class="fa fa-file-excel-o"></i> Download Report</a></li>
             @endif
           </ul>
         </li>
