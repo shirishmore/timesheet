@@ -61,4 +61,79 @@ class TimeEntry extends Model
 
         return $query;
     }
+
+    public function getProjectWiseReport()
+    {
+        $select = [
+            'te.project_id as project_id',
+            'p.name as projectName',
+            'c.name as clientName',
+            DB::raw("GROUP_CONCAT(DISTINCT u.name) as team"),
+            DB::raw("SUM(te.time) as totalTime")
+        ];
+
+        $query = DB::table('time_entries as te')
+            ->select($select)
+            ->join('users as u', 'u.id', '=', 'te.user_id', 'left')
+            ->join('projects as p', 'p.id', '=', 'te.project_id', 'left')
+            ->join('clients as c', 'c.id', '=', 'p.client_id', 'left')
+            ->groupBy('te.project_id')
+            ->orderBy('te.created_at', 'desc')
+            ->get();
+            //->toSql();
+            //echo "<pre>";print_r($query);die;
+        return $query;
+    }
+
+    public function getProjectWiseDetailedReport()
+    {
+        $select = [
+            'te.project_id as project_id',
+            'p.name as projectName',
+            'c.name as clientName',
+            DB::raw("GROUP_CONCAT(DISTINCT u.name) as team"),
+            'te.time as time',
+            DB::raw("SUM(te.time) as totalTime")
+        ];
+
+        $query = DB::table('time_entries as te')
+            ->select($select)
+            ->join('users as u', 'u.id', '=', 'te.user_id', 'left')
+            ->join('projects as p', 'p.id', '=', 'te.project_id', 'left')
+            ->join('clients as c', 'c.id', '=', 'p.client_id', 'left')
+            ->groupBy(DB::raw("te.project_id,te.time WITH ROLLUP"))
+            //->orderBy('te.created_at', 'desc')
+            ->get();
+            //->toSql();
+            //echo "<pre>";print_r($query);die;
+        return $query;
+    }
+
+    public function getDateWiseReport()
+    {
+        $select = [
+            'te.desc as description',
+            'te.time as time',
+            'u.name as username',
+            'p.name as projectName',
+            'c.name as clientName',
+            DB::raw("GROUP_CONCAT(t.name) as tags"),
+            DB::raw("DATE(te.created_at) as createdDate"),
+        ];
+
+        $query = DB::table('time_entries as te')
+            ->select($select)
+            ->join('users as u', 'u.id', '=', 'te.user_id', 'left')
+            ->join('projects as p', 'p.id', '=', 'te.project_id', 'left')
+            ->join('clients as c', 'c.id', '=', 'p.client_id', 'left')
+            ->join('taggables as tg', 'tg.taggable_id', '=', 'te.id', 'left')
+            ->join('tags as t', 't.id', '=', 'tg.tag_id', 'left')
+            ->groupBy('te.created_at')
+            ->orderBy('te.created_at', 'desc')
+            //->get();
+            ->toSql();
+            echo "<pre>";print_r($query);die;
+
+        return $query;
+    }
 }
