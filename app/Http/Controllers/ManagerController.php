@@ -55,15 +55,17 @@ class ManagerController extends Controller
         })->download('xls');
     }
 
-    public function downloadProjectWiseReport()
+    public function downloadProjectWiseReport($sdate,$edate)
     {
-        Excel::create('Timesheet_ProjectWise_Report_' . time(), function ($excel) {
-                $timeEntryObj = new TimeEntry;
-                $timeEntries = $timeEntryObj->getProjectWiseReport();
+        $timeEntryObj = new TimeEntry;
+        $timeEntries = $timeEntryObj->getProjectWiseReport($sdate,$edate);
+
+        Excel::create('Timesheet_ProjectWise_Report_' . time(), function ($excel) use($timeEntries) {
 
                 $data = [];
                 foreach ($timeEntries as $entry) {
                     $data[] = [
+                        'Date' => $entry->createdDate,
                         'Project Name' => $entry->projectName,
                         'Client Name' => $entry->clientName,
                         'Total Time' => $entry->totalTime,
@@ -78,15 +80,17 @@ class ManagerController extends Controller
             })->download('xls');
     }
 
-    public function downloadProjectWiseDetailedReport()
+    public function downloadProjectWiseDetailedReport($sdate,$edate)
     {
-        Excel::create('Timesheet_ProjectWise_Detailed_Report_' . time(), function ($excel) {
-                $timeEntryObj = new TimeEntry;
-                $timeEntries = $timeEntryObj->getProjectWiseDetailedReport();
+        $timeEntryObj = new TimeEntry;
+        $timeEntries = $timeEntryObj->getProjectWiseDetailedReport($sdate,$edate);
+
+        Excel::create('Timesheet_ProjectWise_Detailed_Report_' . time(), function ($excel) use($timeEntries) {
                 //echo "ss<pre>";print_r($timeEntries);die;
                 $data = [];
                 foreach ($timeEntries as $entry) {
                     $data[] = [
+                        'Date' => $entry->createdDate,
                         'Project Name' => $entry->projectName,
                         'Client Name' => $entry->clientName,
                         'Total Time' => $entry->totalTime,
@@ -100,19 +104,22 @@ class ManagerController extends Controller
             })->download('xls');
     }
 
-    public function downloadDateWiseReport()
+    public function downloadDateWiseReport($sdate,$edate)
     {
-        Excel::create('Timesheet_DateWise_Report_' . time(), function ($excel) {
-                $timeEntryObj = new TimeEntry;
-                $timeEntries = $timeEntryObj->getDateWiseReport();
+        $timeEntryObj = new TimeEntry;
+        $timeEntries = $timeEntryObj->getDateWiseReport($sdate,$edate);
+        Excel::create('Timesheet_DateWise_Report_' . time(), function ($excel) use($timeEntries) {
 
                 $data = [];
                 foreach ($timeEntries as $entry) {
                     $data[] = [
+                        'Date' => $entry->createdDate,
+                        'Task' => $entry->description,
                         'Project Name' => $entry->projectName,
                         'Client Name' => $entry->clientName,
-                        'Total Time' => $entry->totalTime,
-
+                        'Tags' => $entry->tags,
+                        'Duration' => $entry->time,
+                        'Team' => $entry->username
                     ];
                 }
 
