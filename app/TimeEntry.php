@@ -69,7 +69,7 @@ class TimeEntry extends Model
             'p.name as projectName',
             'c.name as clientName',
             DB::raw("GROUP_CONCAT(DISTINCT u.name) as team"),
-            DB::raw("SUM(te.time) as totalTime")
+            DB::raw("SUM(te.time) as totalTime"),
         ];
 
         $query = DB::table('time_entries as te')
@@ -80,8 +80,7 @@ class TimeEntry extends Model
             ->groupBy('te.project_id')
             ->orderBy('te.created_at', 'desc')
             ->get();
-            //->toSql();
-            //echo "<pre>";print_r($query);die;
+
         return $query;
     }
 
@@ -93,7 +92,7 @@ class TimeEntry extends Model
             'c.name as clientName',
             DB::raw("GROUP_CONCAT(DISTINCT u.name) as team"),
             'te.time as time',
-            DB::raw("SUM(te.time) as totalTime")
+            DB::raw("SUM(te.time) as totalTime"),
         ];
 
         $query = DB::table('time_entries as te')
@@ -102,10 +101,7 @@ class TimeEntry extends Model
             ->join('projects as p', 'p.id', '=', 'te.project_id', 'left')
             ->join('clients as c', 'c.id', '=', 'p.client_id', 'left')
             ->groupBy(DB::raw("te.project_id,te.time WITH ROLLUP"))
-            //->orderBy('te.created_at', 'desc')
             ->get();
-            //->toSql();
-            //echo "<pre>";print_r($query);die;
         return $query;
     }
 
@@ -132,7 +128,8 @@ class TimeEntry extends Model
             ->orderBy('te.created_at', 'desc')
             //->get();
             ->toSql();
-            echo "<pre>";print_r($query);die;
+        echo "<pre>";
+        print_r($query);die;
 
         return $query;
     }

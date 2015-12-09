@@ -58,67 +58,65 @@ class ManagerController extends Controller
     public function downloadProjectWiseReport()
     {
         Excel::create('Timesheet_ProjectWise_Report_' . time(), function ($excel) {
-                $timeEntryObj = new TimeEntry;
-                $timeEntries = $timeEntryObj->getProjectWiseReport();
+            $timeEntryObj = new TimeEntry;
+            $timeEntries = $timeEntryObj->getProjectWiseReport();
 
-                $data = [];
-                foreach ($timeEntries as $entry) {
-                    $data[] = [
-                        'Project Name' => $entry->projectName,
-                        'Client Name' => $entry->clientName,
-                        'Total Time' => $entry->totalTime,
-                        'Team' => $entry->team,
+            $data = [];
+            foreach ($timeEntries as $entry) {
+                $data[] = [
+                    'Project Name' => $entry->projectName,
+                    'Client Name' => $entry->clientName,
+                    'Total Time' => $entry->totalTime,
+                    'Team' => $entry->team,
+                ];
+            }
 
-                    ];
-                }
-
-                $excel->sheet('Sheet 1', function ($sheet) use ($data) {
-                    $sheet->fromArray($data);
-                });
-            })->download('xls');
+            $excel->sheet('Sheet 1', function ($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 
     public function downloadProjectWiseDetailedReport()
     {
         Excel::create('Timesheet_ProjectWise_Detailed_Report_' . time(), function ($excel) {
-                $timeEntryObj = new TimeEntry;
-                $timeEntries = $timeEntryObj->getProjectWiseDetailedReport();
-                //echo "ss<pre>";print_r($timeEntries);die;
-                $data = [];
-                foreach ($timeEntries as $entry) {
-                    $data[] = [
-                        'Project Name' => $entry->projectName,
-                        'Client Name' => $entry->clientName,
-                        'Total Time' => $entry->totalTime,
-                        'Team' => $entry->team,
-                    ];
-                }
+            $timeEntryObj = new TimeEntry;
+            $timeEntries = $timeEntryObj->getProjectWiseDetailedReport();
+            $data = [];
+            foreach ($timeEntries as $entry) {
+                $data[] = [
+                    'Project Name' => $entry->projectName,
+                    'Client Name' => $entry->clientName,
+                    'Total Time' => $entry->totalTime,
+                    'Team' => $entry->team,
+                ];
+            }
 
-                $excel->sheet('Sheet 1', function ($sheet) use ($data) {
-                    $sheet->fromArray($data);
-                });
-            })->download('xls');
+            $excel->sheet('Sheet 1', function ($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 
     public function downloadDateWiseReport()
     {
         Excel::create('Timesheet_DateWise_Report_' . time(), function ($excel) {
-                $timeEntryObj = new TimeEntry;
-                $timeEntries = $timeEntryObj->getDateWiseReport();
+            $timeEntryObj = new TimeEntry;
+            $timeEntries = $timeEntryObj->getDateWiseReport();
 
-                $data = [];
-                foreach ($timeEntries as $entry) {
-                    $data[] = [
-                        'Project Name' => $entry->projectName,
-                        'Client Name' => $entry->clientName,
-                        'Total Time' => $entry->totalTime,
+            $data = [];
+            foreach ($timeEntries as $entry) {
+                $data[] = [
+                    'Project Name' => $entry->projectName,
+                    'Client Name' => $entry->clientName,
+                    'Total Time' => $entry->totalTime,
 
-                    ];
-                }
+                ];
+            }
 
-                $excel->sheet('Sheet 1', function ($sheet) use ($data) {
-                    $sheet->fromArray($data);
-                });
-            })->download('xls');
+            $excel->sheet('Sheet 1', function ($sheet) use ($data) {
+                $sheet->fromArray($data);
+            });
+        })->download('xls');
     }
 }
