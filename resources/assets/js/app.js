@@ -35,17 +35,56 @@ myApp.config(['$routeProvider', '$locationProvider',
 
         $routeProvider.when('/projects', {
             templateUrl: '/templates/projects/projects-listing.html',
-            controller: 'projectController'
+            controller: 'projectController',
+            resolve: {
+                action: function(projectFactory) {
+                    return {
+                        projects: projectFactory.getProjectList()
+                    }
+                }
+            }
+        });
+
+        $routeProvider.when('/projects/add', {
+            templateUrl: '/templates/projects/add-project.html',
+            controller: 'projectController',
+            resolve: {
+                action: function(clientFactory) {
+                    return {
+                        clients: clientFactory.getClientList()
+                    }
+                }
+            }
         });
 
         $routeProvider.when('/projects/:id', {
             templateUrl: '/templates/projects/projects-details.html',
-            controller: 'projectController'
+            controller: 'projectController',
+            resolve: {
+                action: function() {
+                    return 'single';
+                }
+            }
         });
 
         $routeProvider.when('/projects/:id/estimate/add', {
             templateUrl: '/templates/projects/project-estiamte-add.html',
-            controller: 'projectController'
+            controller: 'projectController',
+            resolve: {
+                action: function() {
+                    return 'single';
+                }
+            }
+        });
+
+        $routeProvider.when('/projects/estimate/:id', {
+            templateUrl: '/templates/projects/project-estiamte-add.html',
+            controller: 'projectController',
+            resolve: {
+                action: function() {
+                    return 'single';
+                }
+            }
         });
 
         $routeProvider.otherwise('/');

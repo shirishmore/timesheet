@@ -61,10 +61,12 @@ Route::group(['middleware' => 'auth'], function () {
         get('time-report', 'ApiController@getFilterReport');
         get('get-user-list', 'ApiController@getUserList');
         get('get-project-list', 'ApiController@getProjectList');
+        get('get-client-list', 'ApiController@getClientList');
         get('get-project-by-id/{id}', 'ApiController@getProjectById');
         post('time-report-filter', 'ApiController@getFilterReportSearch');
         get('get-timeentry-by-date', 'ApiController@getTimeSheetEntryByDate');
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
+        post('save-new-project', 'ApiController@saveNewProject');
     });
 
     Route::group(['prefix' => 'spa'], function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use App\Estimate;
 use App\Http\Controllers\Controller;
 use App\Project;
@@ -10,6 +11,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
@@ -27,7 +29,12 @@ class ApiController extends Controller
 
     public function getProjectList()
     {
-        return Project::with('client')->with('estimates')->get();
+        return Project::with('client')->with('estimates')->orderBy('name')->get();
+    }
+
+    public function getClientList()
+    {
+        return Client::orderBy('name')->get();
     }
 
     public function getProjectById($id)
@@ -145,5 +152,28 @@ class ApiController extends Controller
         ]);
 
         return response($estimate, 201);
+    }
+
+    public function saveNewProject(Request $request)
+    {
+        if (Gate::denies('addClient', new Client)) {
+            abort(403, 'You are now allowed here');
+        }
+
+        $rules = ['name' => 'required', 'client' => 'required'];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+
+        $project = new Project;
+        $project->name = $request->input('name');
+        $project->client_id = $request->input('client');
+        $project->status = 'active';
+        $project->save();
+
+        return response($project, 201);
     }
 }

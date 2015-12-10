@@ -1,10 +1,22 @@
-myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location',
-    function($scope, projectFactory, $routeParams, snackbar, $location) {
-        projectFactory.getProjectList().success(function(response) {
-            console.log('Projects', response);
-            $scope.projects = response;
-        });
+myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location', 'action', 'clientFactory',
+    function($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory) {
 
+        /*loading all projects*/
+        if (action && action.projects != undefined) {
+            action.projects.success(function(response) {
+                console.log('all projects', response);
+                $scope.projects = response;
+            });
+        }
+
+        if (action && action.clients != undefined) {
+            action.clients.success(function(response) {
+                console.log('all clients', response);
+                $scope.clients = response;
+            });
+        }
+
+        /*load single project data*/
         if ($routeParams.id) {
             $scope.singleProjectId = $routeParams.id;
             projectFactory.getProjectById($routeParams.id).success(function(response) {
@@ -18,10 +30,28 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
             singleProject: {},
             showSingleProject: false,
             projectEstimte: {},
-            newEstimateFormSubmit: false
+            newEstimateFormSubmit: false,
+            newProject: {}
         });
 
         angular.extend($scope, {
+            addNewProject: function(addProjectForm) {
+                if (addProjectForm.$valid) {
+                    console.log($scope.newProject);
+                    var newProjectData = {
+                        name: $scope.newProject.name,
+                        client: $scope.newProject.client_id[0].id
+                    };
+                    projectFactory.saveNewProject(newProjectData).success(function(response) {
+                        console.log('save new project', response);
+                        $location.path('/projects');
+                        snackbar.create("Project added", 1000);
+                    })
+                } else {
+                    $scope.newEstimateFormSubmit = true;
+                    snackbar.create("Your form has errors!!", 1000);
+                }
+            },
             saveProjectEstimate: function(addProjectEstimateForm) {
                 if (addProjectEstimateForm.$valid) {
                     console.log('$scope.projectEstimte', $scope.projectEstimte);
@@ -34,6 +64,7 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                     projectFactory.saveProjectEstimate(estimateData).success(function(response) {
                         console.log(response);
                         $location.path('/projects/' + $routeParams.id);
+                        snackbar.create("Estimate added", 1000);
                     });
                 } else {
                     $scope.newEstimateFormSubmit = true;
@@ -63,6 +94,17 @@ myApp.factory('projectFactory', ['$http', function($http) {
             url: baseUrl + 'api/save-project-estimate',
             method: 'POST',
             data: estimateData
+        });
+    }
+
+    projectFactory.saveNewProject = function(newProjectData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/save-new-project',
+            method: 'POST',
+            data: newProjectData
         });
     }
 
