@@ -2,14 +2,15 @@ var myApp = angular.module('myApp', [
     'ngRoute',
     'oi.select',
     '720kb.datepicker',
-    'chart.js'
+    'chart.js',
+    'angular.snackbar'
 ]);
 
 myApp.controller('globalController', ['$scope', '$location',
     function($scope, $location) {
         angular.extend($scope, {
             reportTabUrl: '/templates/manager/reportTabs.html',
-            projectsTabUrl: '/templates/projects/projectTabs.html',
+            singleProjectTab: '/templates/projects/singleProjectTab.html',
             checkActiveLink: function(currLink) {
                 if ($location.path() == currLink) {
                     return 'active';
@@ -39,6 +40,11 @@ myApp.config(['$routeProvider', '$locationProvider',
 
         $routeProvider.when('/projects/:id', {
             templateUrl: '/templates/projects/projects-details.html',
+            controller: 'projectController'
+        });
+
+        $routeProvider.when('/projects/:id/estimate/add', {
+            templateUrl: '/templates/projects/project-estiamte-add.html',
             controller: 'projectController'
         });
 

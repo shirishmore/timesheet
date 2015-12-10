@@ -64,6 +64,7 @@ Route::group(['middleware' => 'auth'], function () {
         get('get-project-by-id/{id}', 'ApiController@getProjectById');
         post('time-report-filter', 'ApiController@getFilterReportSearch');
         get('get-timeentry-by-date', 'ApiController@getTimeSheetEntryByDate');
+        post('save-project-estimate', 'ApiController@saveProjectEstimate');
     });
 
     Route::group(['prefix' => 'spa'], function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Estimate;
 use App\Http\Controllers\Controller;
 use App\Project;
 use App\TimeEntry;
@@ -9,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
@@ -68,21 +70,18 @@ class ApiController extends Controller
         if ($request->input('startDate')) {
             $startDate = Carbon::parse($request->input('startDate'));
             $string = $startDate->year . '-' . $startDate->month . '-' . $startDate->day . ' 00:00:00';
-            \Log::info($string);
             $query->where('te.created_at', '>=', $string);
         }
 
         if ($request->input('endDate')) {
             $endDate = Carbon::parse($request->input('endDate'));
             $stringEndDate = $endDate->year . '-' . $endDate->month . '-' . ($endDate->day + 1) . ' 00:00:00';
-            \Log::info($stringEndDate);
             $query->where('te.created_at', '<=', $stringEndDate);
         }
 
         $query->orderBy('te.created_at', 'desc');
 
         $result = $query->get();
-        // \Log::info($query->toSql());
 
         $finalData = [];
         foreach ($result as $row) {
@@ -123,5 +122,28 @@ class ApiController extends Controller
         // \Log::info(print_r($data, 1));
 
         return $data;
+    }
+
+    public function saveProjectEstimate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'project_id' => 'required|integer',
+            'desc' => 'required|min:5',
+            'hours_allocated' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 301);
+        }
+
+        $estimate = Estimate::create([
+            'desc' => $request->input('desc'),
+            'project_id' => $request->input('project_id'),
+            'hours_allocated' => $request->input('hours_allocated'),
+            'hours_consumed' => 0,
+            'status' => "In progress",
+        ]);
+
+        return response($estimate, 201);
     }
 }
