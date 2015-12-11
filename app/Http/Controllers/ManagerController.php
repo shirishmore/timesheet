@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\TimeEntry;
 use App\User;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\PieGraph;
 
 class ManagerController extends Controller
 {
@@ -54,7 +55,8 @@ class ManagerController extends Controller
             });
         })->download('xls');
     }
-
+    //param 1 : $sdate = 'yyyy-mm-dd'
+    //param 2 : $edate = 'yyyy-mm-dd'
     public function downloadProjectWiseReport($sdate,$edate)
     {
         $timeEntryObj = new TimeEntry;
@@ -79,7 +81,8 @@ class ManagerController extends Controller
                 });
             })->download('xls');
     }
-
+    //param 1 : $sdate = 'yyyy-mm-dd'
+    //param 2 : $edate = 'yyyy-mm-dd'
     public function downloadProjectWiseDetailedReport($sdate,$edate)
     {
         $timeEntryObj = new TimeEntry;
@@ -103,7 +106,8 @@ class ManagerController extends Controller
                 });
             })->download('xls');
     }
-
+    //param 1 : $sdate = 'yyyy-mm-dd'
+    //param 2 : $edate = 'yyyy-mm-dd'
     public function downloadDateWiseReport($sdate,$edate)
     {
         $timeEntryObj = new TimeEntry;
@@ -127,5 +131,47 @@ class ManagerController extends Controller
                     $sheet->fromArray($data);
                 });
             })->download('xls');
+    }
+
+    public function createPieChart($sdate,$edate)
+    {
+        $timeEntryObj = new TimeEntry;
+        $timeEntries = $timeEntryObj->getProjectWiseReport($sdate,$edate);
+        /*$colors = ['red', 'white', 'black','blue','orange','pink','yellow','magenta','aqua','grey','green'];
+        $lenght_colors = count($colors);*/
+
+        $data = [];$cnt=0;
+        foreach ($timeEntries as $entry) {
+          //$data[] = ['time' => $entry->totalTime, 'pname' => $entry->projectName];
+            $time_arr[] = $entry->totalTime;
+            $pname_arr[] = $entry->projectName;
+           /*if($cnt != $lenght_colors)
+            {
+                $cnt++;
+            }
+            else
+            {
+                $cnt = 0;
+            }
+            $color_arr[] = $colors[$cnt];*/
+        }
+        //echo '<pre>';print_r($data);die;
+        $pie = new PieGraph();//PieGraph(200, 100, array(231,122,32,54));
+        $pie->setImage(200, 100, $time_arr);
+        // colors for the data
+        $color_arr = ["#ff0000","#ff8800","#0022ff","#989898","#6600CC","#FF0000 ","#660066","#CCFF00","#FF0099","#33ff99","#33ff11"];
+        $pie->setColors($color_arr);
+
+        // legends for the data
+        $pie->setLegends($pname_arr);
+
+        // Display creation time of the graph
+        $pie->DisplayCreationTime();
+
+        // Height of the pie 3d effect
+        $pie->set3dHeight(15);
+
+        // Display the graph
+        $pie->display();
     }
 }
