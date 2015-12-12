@@ -54,9 +54,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'manager'], function () {
         get('time-tracker-report', 'ManagerController@getTimeReport');
         get('time-tracker-download', 'ManagerController@downloadReport');
-        get('project-wise-download', 'ManagerController@downloadProjectWiseReport');
-        get('project-wise-detailed-download', 'ManagerController@downloadProjectWiseDetailedReport');
-        get('date-wise-download', 'ManagerController@downloadDateWiseReport');
+        get('project-wise-download/{sdate}/{edate}', 'ManagerController@downloadProjectWiseReport');
+        get('project-wise-detailed-download/{sdate}/{edate}', 'ManagerController@downloadProjectWiseDetailedReport');
+        get('date-wise-download/{sdate}/{edate}', 'ManagerController@downloadDateWiseReport');
+        get('create-pie-chart/{sdate}/{edate}', 'ManagerController@createPieChart');
     });
 
     Route::group(['prefix' => 'api'], function () {
