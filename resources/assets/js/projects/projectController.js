@@ -1,6 +1,6 @@
-myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location', 'action', 'clientFactory', 'estimateFactory',
+myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location', 'action', 'clientFactory', 'estimateFactory', 'timeEntry',
 
-    function($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory, estimateFactory) {
+    function($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory, estimateFactory, timeEntry) {
 
         /*loading all projects*/
         if (action && action.projects != undefined) {
@@ -28,13 +28,23 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         }
 
         if ($routeParams.estimateId) {
+
+            /*Get the estimate details by id*/
             estimateFactory.getEstimateById($routeParams.estimateId).success(function(response) {
                 console.log('Need to load estimate', response);
                 $scope.singleEstimate = response;
+
+                /*Get the project details by id*/
                 projectFactory.getProjectById(response.project_id).success(function(response) {
                     console.log('Single project', response);
                     $scope.singleProject = response;
                     $scope.showSingleEstimate = true;
+
+                    /*Get time entries for the estimate*/
+                    timeEntry.getEntriesForEstimate($scope.singleEstimate.id).success(function(response) {
+                        $scope.estimateTimes = response;
+                        console.log('Time entries', response);
+                    });
                 });
             });
         }
@@ -50,6 +60,15 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         });
 
         angular.extend($scope, {
+            deleteProject: function() {
+                var r = confirm("This will delete the project and it's time. Ok?");
+                if (r === true) {
+                    projectFactory.deleteProject($routeParams.id).success(function(response) {
+                        $location.path('/projects');
+                        snackbar.create("Project deleted", 1000);
+                    });
+                }
+            },
             editEstiate: function(editEstimateForm) {
                 if (editEstimateForm.$valid) {
                     var estimateData = {
@@ -108,39 +127,3 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         });
     }
 ]);
-
-myApp.factory('projectFactory', ['$http', function($http) {
-    var projectFactory = {};
-
-    projectFactory.getProjectList = function() {
-        return $http.get(baseUrl + 'api/get-project-list');
-    }
-
-    projectFactory.getProjectById = function(id) {
-        return $http.get(baseUrl + 'api/get-project-by-id/' + id);
-    }
-
-    projectFactory.saveProjectEstimate = function(estimateData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/save-project-estimate',
-            method: 'POST',
-            data: estimateData
-        });
-    }
-
-    projectFactory.saveNewProject = function(newProjectData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/save-new-project',
-            method: 'POST',
-            data: newProjectData
-        });
-    }
-
-    return projectFactory;
-}]);

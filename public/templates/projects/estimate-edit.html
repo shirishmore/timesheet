@@ -18,7 +18,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <h4>Edit Estimate</h4>
             <form name="editEstimateForm" ng-submit="editEstiate(editEstimateForm)" novalidate>
                 <div class="form-group"
@@ -45,6 +45,28 @@
 
         <button class="btn btn-success">Save</button>
     </form>
+</div>
+<div class="col-sm-8">
+    <h4>Time entries</h4>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Desc</th>
+                <th>Date</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr ng-repeat="(key, estimateTime) in estimateTimes">
+                <td>{{ estimateTime.name }}</td>
+                <td>{{ estimateTime.desc }}</td>
+                <td>{{ estimateTime.created_at }}</td>
+                <td>{{ estimateTime.time }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 </div>
 </div>

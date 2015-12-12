@@ -32,6 +32,14 @@ class ApiController extends Controller
         return Project::with('client')->with('estimates')->orderBy('name')->get();
     }
 
+    public function deleteProjectById(Request $request)
+    {
+        $project = Project::findOrFail($request->input('id'));
+        $project->delete();
+
+        return response('Project deleted', 200);
+    }
+
     public function getClientList()
     {
         return Client::orderBy('name')->get();
@@ -142,9 +150,18 @@ class ApiController extends Controller
         }
 
         $data = array_slice($data, 0, 3);
-        // \Log::info(print_r($data, 1));
 
         return $data;
+    }
+
+    public function getTimeEntryForEstimate($id)
+    {
+        $query = DB::table('time_entry_estimates as tee');
+        $query->where('tee.estimate_id', $id);
+        $query->join('time_entries as te', 'te.id', '=', 'tee.time_entry_id', 'left');
+        $query->join('users as u', 'u.id', '=', 'te.user_id', 'left');
+        $query->orderBy('te.created_at', 'desc');
+        return $query->get();
     }
 
     public function saveProjectEstimate(Request $request)

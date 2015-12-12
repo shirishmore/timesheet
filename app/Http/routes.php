@@ -70,8 +70,10 @@ Route::group(['middleware' => 'auth'], function () {
         post('update-estimate-by-id', 'ApiController@updateEstimateById');
         post('time-report-filter', 'ApiController@getFilterReportSearch');
         get('get-timeentry-by-date', 'ApiController@getTimeSheetEntryByDate');
+        get('get-timeentry-for-estimate/{id}', 'ApiController@getTimeEntryForEstimate');
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
         post('save-new-project', 'ApiController@saveNewProject');
+        post('delete-project', 'ApiController@deleteProjectById');
     });
 
     Route::group(['prefix' => 'spa'], function () {
