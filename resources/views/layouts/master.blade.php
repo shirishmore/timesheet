@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="{{ url('vendor/css/select.min.css') }}">
   <link rel="stylesheet" href="{{ url('vendor/css/angular-datepicker.min.css') }}">
   <link rel="stylesheet" href="{{ url('vendor/css/angular-chart.min.css') }}">
+  <link rel="stylesheet" href="{{ url('vendor/css/angular.snackbar.css') }}">
+  <link rel="stylesheet" href="{{ url('vendor/css/loading-bar.min.css') }}">
   <link rel="stylesheet" href="{{ elixir('css/app.css') }}" />
 
   <style type="text/css">
@@ -51,6 +53,8 @@
   <script type="text/javascript" src="{{ url('vendor/moment.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/Chart.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/angular-chart.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/angular.snackbar.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/loading-bar.min.js') }}"></script>
 
   <script type="text/javascript" src="{{ elixir('js/app.js') }}"></script>
   <!--<script type="text/javascript" src="{{ URL::asset('js/client.js') !!}"></script>

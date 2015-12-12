@@ -1,0 +1,47 @@
+<div class="col-sm-12" ng-hide="projects">
+    <i class="fa fa-refresh fa-spin fa-5x"></i>
+</div>
+
+<div ng-show="projects">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Projects Management</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <a href="#/projects/add" class="btn btn-success"><i class="fa fa-plus"></i> Add Project</a>
+            <br />
+            <br />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Client</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-repeat="project in projects">
+                        <td>{{ project.id }}</td>
+                        <td><a href="#projects/{{ project.id }}">{{ project.name }}</a> <strong>({{ project.estimates.length }})</strong></td>
+                        <td>{{ project.client.name }}</td>
+                        <td>{{ project.status }}</td>
+                        <td>
+                            <a href="#projects/{{ project.id }}"><i class="fa fa-eye"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

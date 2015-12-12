@@ -1,0 +1,46 @@
+<div class="col-sm-12" ng-hide="showSingleProject">
+    <i class="fa fa-refresh fa-spin fa-5x"></i>
+</div>
+
+<div ng-show="showSingleProject">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>{{ singleProject.name }}</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 jumbotron">
+            <p>Started: {{singleProject.created_at }}</p>
+            <p>Status: {{singleProject.status }}</p>
+            <a href="#/projects" class="btn btn-primary">Back</a>
+            <button class="btn btn-warning" ng-click="deleteProject()">Delete</button>
+        </div>
+    </div>
+
+    <div ng-include="singleProjectTab" scope="" onload=""></div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr class="success">
+                        <td>Desc</td>
+                        <td>Hours allocated</td>
+                        <td>Hours consumed</td>
+                        <td>Status</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-repeat="(key, value) in singleProject.estimates | orderBy:value.id:true">
+                        <td><a href="#/projects/estimate/{{ value.id }}">{{ value.desc }}</a></td>
+                        <td>{{ value.hours_allocated }}</td>
+                        <td>{{ value.hours_consumed }}</td>
+                        <td>{{ value.status }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

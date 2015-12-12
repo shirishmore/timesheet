@@ -64,6 +64,8 @@
         @endforeach
       </tbody>
     </table>
+
+    {!! $estimates->render() !!}
   </div>
   @endif
 </div>

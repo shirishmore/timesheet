@@ -62,7 +62,7 @@ class TimeEntry extends Model
         return $query;
     }
 
-    public function getProjectWiseReport($sdate,$edate)
+    public function getProjectWiseReport($sdate, $edate)
     {
         $select = [
             'te.project_id as project_id',
@@ -86,7 +86,7 @@ class TimeEntry extends Model
         return $query;
     }
 
-    public function getProjectWiseDetailedReport($sdate,$edate)
+    public function getProjectWiseDetailedReport($sdate, $edate)
     {
         $select = [
             'te.project_id as project_id',
@@ -105,13 +105,12 @@ class TimeEntry extends Model
             ->join('clients as c', 'c.id', '=', 'p.client_id', 'left')
             ->whereRaw('DATE(te.created_at) BETWEEN "' . $sdate . '" AND "' . $edate . '" ')
             ->groupBy(DB::raw("te.project_id,te.time WITH ROLLUP"))
-            //->orderBy('te.created_at', 'desc')
             ->get();
-          
+
         return $query;
     }
 
-    public function getDateWiseReport($sdate,$edate)
+    public function getDateWiseReport($sdate, $edate)
     {
         $select = [
             'te.desc as description',
@@ -134,8 +133,6 @@ class TimeEntry extends Model
             ->orderBy('te.created_at', 'desc')
             ->whereRaw('DATE(te.created_at) BETWEEN "' . $sdate . '" AND "' . $edate . '" ')
             ->get();
-            //->toSql();
-            //echo "<pre>";print_r($query);die;
 
         return $query;
     }

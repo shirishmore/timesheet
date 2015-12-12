@@ -64,8 +64,22 @@ Route::group(['middleware' => 'auth'], function () {
         get('time-report', 'ApiController@getFilterReport');
         get('get-user-list', 'ApiController@getUserList');
         get('get-project-list', 'ApiController@getProjectList');
+        get('get-client-list', 'ApiController@getClientList');
+        get('get-project-by-id/{id}', 'ApiController@getProjectById');
+        get('get-estimate-by-id/{id}', 'ApiController@getEstimateById');
+        post('update-estimate-by-id', 'ApiController@updateEstimateById');
         post('time-report-filter', 'ApiController@getFilterReportSearch');
         get('get-timeentry-by-date', 'ApiController@getTimeSheetEntryByDate');
+        get('get-timeentry-for-estimate/{id}', 'ApiController@getTimeEntryForEstimate');
+        post('save-project-estimate', 'ApiController@saveProjectEstimate');
+        post('save-new-project', 'ApiController@saveNewProject');
+        post('delete-project', 'ApiController@deleteProjectById');
+    });
+
+    Route::group(['prefix' => 'spa'], function () {
+        get('spa-dashboard', 'SpaController@index');
+        get('time-tracker-report', 'ManagerController@getTimeReport');
+        get('time-tracker-download', 'ManagerController@downloadReport');
     });
 });
 
