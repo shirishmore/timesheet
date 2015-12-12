@@ -3,7 +3,8 @@ var myApp = angular.module('myApp', [
     'oi.select',
     '720kb.datepicker',
     'chart.js',
-    'angular.snackbar'
+    'angular.snackbar',
+    'angular-loading-bar'
 ]);
 
 myApp.controller('globalController', ['$scope', '$location',
@@ -68,7 +69,7 @@ myApp.config(['$routeProvider', '$locationProvider',
         });
 
         $routeProvider.when('/projects/:id/estimate/add', {
-            templateUrl: '/templates/projects/project-estiamte-add.html',
+            templateUrl: '/templates/projects/project-estimate-add.html',
             controller: 'projectController',
             resolve: {
                 action: function() {
@@ -77,8 +78,8 @@ myApp.config(['$routeProvider', '$locationProvider',
             }
         });
 
-        $routeProvider.when('/projects/estimate/:id', {
-            templateUrl: '/templates/projects/project-estiamte-add.html',
+        $routeProvider.when('/projects/estimate/:estimateId', {
+            templateUrl: '/templates/projects/estimate-edit.html',
             controller: 'projectController',
             resolve: {
                 action: function() {

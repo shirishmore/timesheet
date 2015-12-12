@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-sm-12">
+        <h3>Add Project</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <form ng-submit="addNewProject(addProjectForm)" name="addProjectForm" novalidate>
+            <div class="form-group"
+            ng-class="{'has-error' : addProjectForm.desc.$invalid && !addProjectForm.name.$pristine && newEstimateFormSubmit}">
+            <input type="text" name="name"
+            id="name" placeholder="Enter the project name"
+            class="form-control" tabindex="1" 
+            ng-model="newProject.name" required ng-minlength="3" />
+        </div>
+
+        <div class="form-group">
+            <oi-select
+            oi-options="client.name for client in clients track by project.id"
+            ng-model="newProject.client_id"
+            multiple
+            multiple-limit="1"
+            placeholder="Select Client"
+            ></oi-select>
+        </div>
+
+        <button class="btn btn-primary">Add</button>
+    </form>
+</div>

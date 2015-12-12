@@ -42,6 +42,22 @@ class ApiController extends Controller
         return Project::where('id', $id)->with('client')->with('estimates')->first();
     }
 
+    public function getEstimateById($id)
+    {
+        return Estimate::findOrFail($id);
+    }
+
+    public function updateEstimateById(Request $request)
+    {
+        $estimate = Estimate::find($request->input('id'));
+        $estimate->desc = $request->input('desc');
+        $estimate->hours_allocated = $request->input('hours_allocated');
+        $estimate->status = $request->input('status');
+        $estimate->save();
+
+        return response($estimate, 200);
+    }
+
     public function getFilterReportSearch(Request $request)
     {
         $query = DB::table('time_entries as te');

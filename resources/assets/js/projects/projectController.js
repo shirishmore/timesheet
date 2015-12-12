@@ -1,5 +1,6 @@
-myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location', 'action', 'clientFactory',
-    function($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory) {
+myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location', 'action', 'clientFactory', 'estimateFactory',
+
+    function($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory, estimateFactory) {
 
         /*loading all projects*/
         if (action && action.projects != undefined) {
@@ -26,15 +27,48 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
             });
         }
 
+        if ($routeParams.estimateId) {
+            estimateFactory.getEstimateById($routeParams.estimateId).success(function(response) {
+                console.log('Need to load estimate', response);
+                $scope.singleEstimate = response;
+                projectFactory.getProjectById(response.project_id).success(function(response) {
+                    console.log('Single project', response);
+                    $scope.singleProject = response;
+                    $scope.showSingleEstimate = true;
+                });
+            });
+        }
+
         angular.extend($scope, {
             singleProject: {},
             showSingleProject: false,
+            showSingleEstimate: false,
             projectEstimte: {},
+            singleEstimate: {},
             newEstimateFormSubmit: false,
             newProject: {}
         });
 
         angular.extend($scope, {
+            editEstiate: function(editEstimateForm) {
+                if (editEstimateForm.$valid) {
+                    var estimateData = {
+                        id: $scope.singleEstimate.id,
+                        desc: $scope.singleEstimate.desc,
+                        hours_allocated: $scope.singleEstimate.hours_allocated,
+                        status: $scope.singleEstimate.status
+                    };
+
+                    estimateFactory.updateEstimate(estimateData).success(function(response) {
+                        console.log('estimate edited', response);
+                        $location.path('/projects/' + $scope.singleProject.id);
+                        snackbar.create("Estimate saved", 1000);
+                    });
+                } else {
+                    $scope.newEstimateFormSubmit = true;
+                    snackbar.create("Your form has errors!!", 1000);
+                }
+            },
             addNewProject: function(addProjectForm) {
                 if (addProjectForm.$valid) {
                     console.log($scope.newProject);

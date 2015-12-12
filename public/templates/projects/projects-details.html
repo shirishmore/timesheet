@@ -33,7 +33,7 @@
 
                 <tbody>
                     <tr ng-repeat="(key, value) in singleProject.estimates | orderBy:value.id:true">
-                        <td>{{ value.desc }}</td>
+                        <td><a href="#/projects/estimate/{{ value.id }}">{{ value.desc }}</a></td>
                         <td>{{ value.hours_allocated }}</td>
                         <td>{{ value.hours_consumed }}</td>
                         <td>{{ value.status }}</td>

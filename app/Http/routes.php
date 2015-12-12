@@ -63,6 +63,8 @@ Route::group(['middleware' => 'auth'], function () {
         get('get-project-list', 'ApiController@getProjectList');
         get('get-client-list', 'ApiController@getClientList');
         get('get-project-by-id/{id}', 'ApiController@getProjectById');
+        get('get-estimate-by-id/{id}', 'ApiController@getEstimateById');
+        post('update-estimate-by-id', 'ApiController@updateEstimateById');
         post('time-report-filter', 'ApiController@getFilterReportSearch');
         get('get-timeentry-by-date', 'ApiController@getTimeSheetEntryByDate');
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
