@@ -66,6 +66,7 @@ Route::group(['middleware' => 'auth'], function () {
         get('get-project-list', 'ApiController@getProjectList');
         get('get-client-list', 'ApiController@getClientList');
         get('get-project-comments/{id}', 'ApiController@getProjectComments');
+        post('save-project-comment', 'ApiController@saveProjectComment');
         get('get-project-by-id/{id}', 'ApiController@getProjectById');
         get('get-estimate-by-id/{id}', 'ApiController@getEstimateById');
         post('update-estimate-by-id', 'ApiController@updateEstimateById');
@@ -75,7 +76,6 @@ Route::group(['middleware' => 'auth'], function () {
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
         post('save-new-project', 'ApiController@saveNewProject');
         post('delete-project', 'ApiController@deleteProjectById');
-        post('save-project-comment', 'ApiController@saveProjectComment');
     });
 
     Route::group(['prefix' => 'spa'], function () {
