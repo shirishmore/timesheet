@@ -47,4 +47,9 @@ CanResetPasswordContract
             ->join('users as u', 'u.id', '=', 'ur.user_id')
             ->where('u.id', Auth::user()->id)->get();
     }
+
+    public function comment()
+    {
+        return $this->hasMany('App\Comment');
+    }
 }

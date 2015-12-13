@@ -23,10 +23,20 @@ class Project extends Model
     /**
      * Define relation between Estimate and Project.
      *
-     * @return Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function estimates()
     {
         return $this->hasMany('App\Estimate');
+    }
+
+    /**
+     * A project will have comments
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
+     */
+    public function comments()
+    {
+        return $this->morphToMany('App\Comment', 'commentable');
     }
 }
