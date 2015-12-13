@@ -61,13 +61,14 @@ class ApiController extends Controller
             'u.name as name',
             'c.created_at as created',
             'p.name as project',
-            'p.id as project_id'
+            'p.id as project_id',
         ];
         $query = DB::table('comments as c');
         $query->select($select);
         $query->join('commentables as ct', 'c.id', '=', 'ct.comment_id', 'left');
         $query->join('projects as p', 'p.id', '=', 'ct.commentable_id');
         $query->join('users as u', 'u.id', '=', 'c.user_id');
+        $query->where('ct.commentable_id', $projectId);
 
         $result = $query->get();
         return $result;
@@ -80,7 +81,7 @@ class ApiController extends Controller
             'comment' => $request->input('comment'),
             'parent_id' => 0,
             'thread' => '',
-            'status' => 1
+            'status' => 1,
         ]);
 
         $project = \App\Project::find($request->input('project_id'));
