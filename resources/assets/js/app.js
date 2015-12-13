@@ -4,8 +4,11 @@ var myApp = angular.module('myApp', [
     '720kb.datepicker',
     'chart.js',
     'angular.snackbar',
-    'angular-loading-bar'
+    'angular-loading-bar',
+    'textAngular'
 ]);
+
+myApp.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
 
 myApp.controller('globalController', ['$scope', '$location',
     function($scope, $location) {
@@ -16,6 +19,9 @@ myApp.controller('globalController', ['$scope', '$location',
                 if ($location.path() == currLink) {
                     return 'active';
                 }
+            },
+            timeAgo: function(string) {
+                return moment(string).fromNow();
             }
         })
     }
@@ -64,6 +70,18 @@ myApp.config(['$routeProvider', '$locationProvider',
             resolve: {
                 action: function() {
                     return 'single';
+                }
+            }
+        });
+
+        $routeProvider.when('/projects/:pid/comments', {
+            templateUrl: '/templates/projects/project-comments.html',
+            controller: 'projectController',
+            resolve: {
+                action: function(commentFactory, $route) {
+                    return {
+                        comments: commentFactory.getProjectComments($route.current.params.pid)
+                    };
                 }
             }
         });

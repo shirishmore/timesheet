@@ -1,0 +1,49 @@
+<div class="col-sm-12" ng-hide="comments">
+    <i class="fa fa-refresh fa-spin fa-5x"></i>
+</div>
+
+<div ng-show="comments">
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Projects Comments</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 jumbotron">
+            <p>Name: {{singleProject[0].project }}</p>
+
+            <p>Comments: {{singleProject.length }}</p>
+            <a href="#/projects" class="btn btn-primary">Back</a>
+        </div>
+    </div>
+
+    <div ng-include="singleProjectTab" scope="" onload=""></div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default" ng-repeat="comment in comments | orderBy: comment.id: false">
+                <div class="panel-body comment">
+                    <div class="comment-body" ng-bind-html="comment.comment | unsafe"></div>
+                    <br>
+
+                    <div class="comment-meta-data">
+                        By <strong>{{comment.name}}</strong> {{ timeAgo(comment.created) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <form ng-submit="saveComment(addCommentForm)" name="addCommentForm">
+                <div text-angular ng-model="newComment" style="font-size: 1.5em"></div>
+
+                <br>
+                <button class="btn btn-success">Save</button>
+            </form>
+        </div>
+    </div>
+</div>

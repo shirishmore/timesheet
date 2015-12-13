@@ -3,33 +3,91 @@
 namespace App\Http\Controllers;
 
 use App\Client;
+use App\Comment;
 use App\Estimate;
-use App\Http\Controllers\Controller;
 use App\Project;
 use App\TimeEntry;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
+    /**
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function getFilterReport(Request $request)
     {
         $timeEntryObj = new TimeEntry;
         return $timeEntryObj->getManagerTrackerReport();
     }
 
+    /**
+     * Get the list of users in the system
+     *
+     * @return mixed
+     */
     public function getUserList()
     {
         return User::orderBy('name')->get();
     }
 
+    /**
+     * Get the list of projects in the system with client and estimate data
+     *
+     * @return mixed
+     */
     public function getProjectList()
     {
         return Project::with('client')->with('estimates')->orderBy('name')->get();
+    }
+
+    /**
+     * Get all the comments for a project
+     *
+     * @param $projectId
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getProjectComments($projectId)
+    {
+        $select = [
+            'c.comment as comment',
+            'u.name as name',
+            'c.created_at as created',
+            'p.name as project',
+            'p.id as project_id'
+        ];
+        $query = DB::table('comments as c');
+        $query->select($select);
+        $query->join('commentables as ct', 'c.id', '=', 'ct.comment_id', 'left');
+        $query->join('projects as p', 'p.id', '=', 'ct.commentable_id');
+        $query->join('users as u', 'u.id', '=', 'c.user_id');
+
+        $result = $query->get();
+        return $result;
+    }
+
+    public function saveProjectComment(Request $request)
+    {
+        $comment = new Comment([
+            'user_id' => Auth::user()->id,
+            'comment' => $request->input('comment'),
+            'parent_id' => 0,
+            'thread' => '',
+            'status' => 1
+        ]);
+
+        $project = \App\Project::find($request->input('project_id'));
+        $project->comments()->save($comment);
+
+        $result = $this->getProjectComments($request->input('project_id'));
+        return $result;
     }
 
     public function deleteProjectById(Request $request)

@@ -1,49 +1,63 @@
 .time-entry {
-    margin-bottom: 1em;
-    h3 {
-        span {
-            float: right;
-        }
+  margin-bottom: 1em;
+  h3 {
+    span {
+      float: right;
     }
-    font-size: 1.3em;
-    .item {
-        border-bottom: 1px solid #dddddd;
-            &:hover {
-            display: block;
-            background-color: #efefef;
-        }
-        &:hover {
-            .delete-tracker {
-                display: block;
-            }
-        }
+  }
+  font-size: 1.3em;
+  .item {
+    border-bottom: 1px solid #dddddd;
+    &:hover {
+      display: block;
+      background-color: #efefef;
     }
-    padding: .3em;
-    .desc {
-        width: 70%;
+    &:hover {
+      .delete-tracker {
         display: block;
-        float: left;
+      }
     }
-    .client, .project {
-        font-weight: bold;
-        float: left;
-    }
-    .client:after {
-        content: " -";
-    }
-    .time {
-        margin-right: 1em;
-    }
-    .time, .delete-tracker {
-        float: right;
-    }
-    .delete-tracker {
-        display: none;
-    }
+  }
+  padding: .3em;
+  .desc {
+    width: 70%;
+    display: block;
+    float: left;
+  }
+  .client, .project {
+    font-weight: bold;
+    float: left;
+  }
+  .client:after {
+    content: " -";
+  }
+  .time {
+    margin-right: 1em;
+  }
+  .time, .delete-tracker {
+    float: right;
+  }
+  .delete-tracker {
+    display: none;
+  }
 }
 
 /*Date picker*/
 ._720kb-datepicker-calendar {
-    width: 220px;
-    top: 45px;
+  width: 220px;
+  top: 45px;
+}
+
+.comment {
+  .comment-body {
+    font-size: 1.4em;
+    line-height: 1.1em;
+  }
+  .comment-meta-data {
+    font-size: 0.9em;
+  }
+}
+
+.comment-area {
+  width: 100%;
 }

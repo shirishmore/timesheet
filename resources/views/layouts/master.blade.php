@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{{ url('vendor/css/angular-chart.min.css') }}">
   <link rel="stylesheet" href="{{ url('vendor/css/angular.snackbar.css') }}">
   <link rel="stylesheet" href="{{ url('vendor/css/loading-bar.min.css') }}">
+  <link rel="stylesheet" href="{{ url('vendor/css/textAngular.css') }}">
   <link rel="stylesheet" href="{{ elixir('css/app.css') }}" />
 
   <style type="text/css">
@@ -55,10 +56,10 @@
   <script type="text/javascript" src="{{ url('vendor/angular-chart.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/angular.snackbar.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/loading-bar.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/textAngular-rangy.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/textAngular-sanitize.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/textAngular.min.js') }}"></script>
 
   <script type="text/javascript" src="{{ elixir('js/app.js') }}"></script>
-  <!--<script type="text/javascript" src="{{ URL::asset('js/client.js') !!}"></script>
-  <script type="text/javascript" src="{{ URL::asset('js/project.js') !!}"></script>
-  <script type="text/javascript" src="{{ URL::asset('js/role.js') !!}"></script>-->
 </body>
 </html>
