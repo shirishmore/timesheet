@@ -43,9 +43,9 @@
     @yield('content')
   </div>
 
-  <script type="text/javascript" src="{{ url('js/jquery-1.11.3.min.js')  }}"></script>
-  <script type="text/javascript" src="{{ url('js/bootstrap.min.js') }}"></script>
-  <script type="text/javascript" src="{{ url('js/script.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/jquery-1.11.3.min.js')  }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/bootstrap.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/script.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/angular.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/angular-route.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/select.min.js') }}"></script>
