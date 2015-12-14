@@ -95,13 +95,23 @@ class ManagerController extends Controller
                     'Date' => $entry->createdDate,
                     'Project Name' => $entry->projectName,
                     'Client Name' => $entry->clientName,
+                    'Time' => $entry->time,
                     'Total Time' => $entry->totalTime,
                     'Team' => $entry->team,
                 ];
             }
-
             $excel->sheet('Sheet 1', function ($sheet) use ($data) {
                 $sheet->fromArray($data);
+                foreach ($data as $k => $v) {
+                    $row_num = $k + 2;
+                    if(empty($v['Time']))
+                    {
+                        $sheet->row($row_num, function($row) {
+                                // call cell manipulation methods
+                                $row->setBackground('#FFFF00');
+                        });
+                    }
+                }
             });
         })->download('xls');
     }
@@ -138,16 +148,16 @@ class ManagerController extends Controller
 
         $data = [];
         $cnt = 0;
+        $pie = new PieGraph();
         foreach ($timeEntries as $entry) {
             $time_arr[] = $entry->totalTime;
             $pname_arr[] = $entry->projectName;
+            $color_arr[] = $pie->random_color();
         }
-
-        $pie = new PieGraph();
         $pie->setImage(200, 100, $time_arr);
 
         // colors for the data
-        $color_arr = ["#ff0000", "#ff8800", "#0022ff", "#989898", "#6600CC", "#FF0000 ", "#660066", "#CCFF00", "#FF0099", "#33ff99", "#33ff11"];
+        //$color_arr = ["#ff0000", "#ff8800", "#0022ff", "#989898", "#6600CC", "#FF0000 ", "#660066", "#CCFF00", "#FF0099", "#33ff99", "#33ff11"];
         $pie->setColors($color_arr);
 
         // legends for the data
