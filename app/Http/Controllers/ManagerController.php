@@ -99,8 +99,10 @@ class ManagerController extends Controller
                     'Total Time' => $entry->totalTime,
                     'Team' => $entry->team,
                 ];
-            }
+            }//echo "ss<pre>";print_r(count($data));die;
+
             $excel->sheet('Sheet 1', function ($sheet) use ($data) {
+                $last_row = count($data) + 1;
                 $sheet->fromArray($data);
                 foreach ($data as $k => $v) {
                     $row_num = $k + 2;
@@ -111,6 +113,11 @@ class ManagerController extends Controller
                                 $row->setBackground('#FFFF00');
                         });
                     }
+                    //Last row: total of all projects
+                    $sheet->row($last_row, function($row) {
+                        // call cell manipulation methods
+                        $row->setBackground('#0000FF');
+                    });
                 }
             });
         })->download('xls');
