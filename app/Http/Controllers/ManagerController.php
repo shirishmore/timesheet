@@ -112,7 +112,9 @@ class ManagerController extends Controller
                                 // call cell manipulation methods
                                 $row->setBackground('#FFFF00');
                         });
+                        $sheet->row($row_num, array($v['Date'],$v['Project Name'].' Total',$v['Client Name'],$v['Time'],$v['Total Time'],$v['Team']));
                     }
+                    $sheet->row($last_row, array('','Total','','',$v['Total Time'],''));
                     //Last row: total of all projects
                     $sheet->row($last_row, function($row) {
                         // call cell manipulation methods
