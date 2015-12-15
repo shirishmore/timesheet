@@ -58,6 +58,8 @@ Route::group(['middleware' => 'auth'], function () {
         get('project-wise-detailed-download/{sdate}/{edate}', 'ManagerController@downloadProjectWiseDetailedReport');
         get('date-wise-download/{sdate}/{edate}', 'ManagerController@downloadDateWiseReport');
         get('create-pie-chart/{sdate}/{edate}', 'ManagerController@createPieChart');
+
+        get('backdate-time-entry', 'AdminController@backDateTimeEntry');
     });
 
     Route::group(['prefix' => 'api'], function () {
