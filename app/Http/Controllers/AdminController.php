@@ -16,9 +16,4 @@ class AdminController extends Controller
         return redirect('time-tracker');
         return view('layouts.home');
     }
-
-    public function backDateTimeEntry()
-    {
-        return view('manager.backdate-time-entry');
-    }
 }

@@ -24,6 +24,7 @@
           <ul class="dropdown-menu">
             <li><a href="{{ url('time-tracker') }}">My Entries</a></li>
             <li><a href="{{ url('time-tracker-add') }}">Add Entry</a></li>
+            <li><a href="{{ url('spa/time-tracker-report#/manage/back-date-entry') }}">Backdate Entry</a></li>
             @if (Gate::allows('viewTrackerReport', new \App\TimeEntry))
             <li role="separator" class="divider"></li>
             <li><a href="{{ url('spa/time-tracker-report#/projects') }}"><i class="fa fa-briefcase"></i> Projects</a></li>

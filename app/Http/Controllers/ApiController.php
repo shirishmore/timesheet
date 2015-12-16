@@ -268,4 +268,22 @@ class ApiController extends Controller
 
         return response($project, 201);
     }
+
+    public function allowBackdateEntry(Request $request)
+    {
+        // return $request->all();
+        $date = Carbon::parse($request->input('date'));
+        $userIds = $request->input('users');
+
+        $data = [];
+        foreach ($userIds as $id) {
+            $data[] = [
+                'user_id' => $id,
+                'backdate' => $date,
+                'otp' => uniqid(),
+            ];
+        }
+
+        DB::table('backdate_timeentry')->insert($data);
+    }
 }

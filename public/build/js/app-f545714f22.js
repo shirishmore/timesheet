@@ -8,7 +8,9 @@ var myApp = angular.module('myApp', [
     'textAngular'
 ]);
 
-myApp.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
+myApp.filter('unsafe', function($sce) {
+    return $sce.trustAsHtml;
+});
 
 myApp.controller('globalController', ['$scope', '$location',
     function($scope, $location) {
@@ -106,44 +108,61 @@ myApp.config(['$routeProvider', '$locationProvider',
             }
         });
 
+        /*Management URLs*/
+        $routeProvider.when('/manage/back-date-entry', {
+            templateUrl: '/templates/admin/backdateentry.html',
+            controller: 'adminController',
+            resolve: {
+                action: function(userFactory) {
+                    return {
+                        users: userFactory.getUserList()
+                    };
+                }
+            }
+        });
+
         $routeProvider.otherwise('/');
     }
 ]);
 
-/**
- * Created by amitav on 12/13/15.
- */
-myApp.factory('commentFactory', ['$http', function($http) {
-    var commentFactory = {};
+myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
+    function($scope, action, timeEntry) {
 
-    commentFactory.getProjectComments = function(projectId) {
-        console.log('Project id', projectId);
-        return $http.get(baseUrl + 'api/get-project-comments/' + projectId);
-    }
+        /*check if users are loaded*/
+        if (action && action.users != undefined) {
+            action.users.success(function(response) {
+                console.log('all users', response);
+                $scope.users = response;
+            });
+        }
 
-    commentFactory.saveComment = function (commentData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/save-project-comment',
-            method: 'POST',
-            data: commentData
+        /*Variables*/
+        angular.extend($scope, {
+            backdateEntry: {}
+        });
+
+        /*Methods*/
+        angular.extend($scope, {
+            backdateEntrySubmit: function(backdateEntryForm) {
+                /*get all the user ids*/
+                var userIds = [];
+                angular.forEach($scope.backdateEntry.users, function(value, key) {
+                    userIds.push(value.id);
+                });
+
+                /*create the post data*/
+                var entryData = {
+                    date: $scope.backdateEntry.backdate,
+                    users: userIds
+                };
+
+                timeEntry.saveBackDateEntry(entryData).success(function(response) {
+                    console.log('response', response);
+                });
+            }
         });
     }
-
-    return commentFactory;
-}]);
-
-myApp.factory('clientFactory', ['$http', function($http) {
-    var clientFactory = {};
-
-    clientFactory.getClientList = function() {
-        return $http.get(baseUrl + 'api/get-client-list');
-    }
-
-    return clientFactory;
-}]);
+]);
 
 myApp.factory('estimateFactory', ['$http', function($http) {
     var estimateFactory = {};
@@ -168,18 +187,18 @@ myApp.factory('estimateFactory', ['$http', function($http) {
 
 myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams', 'snackbar', '$location', 'action', 'clientFactory', 'estimateFactory', 'timeEntry', 'commentFactory',
 
-    function ($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory, estimateFactory, timeEntry, commentFactory) {
+    function($scope, projectFactory, $routeParams, snackbar, $location, action, clientFactory, estimateFactory, timeEntry, commentFactory) {
 
         /*loading all projects*/
         if (action && action.projects != undefined) {
-            action.projects.success(function (response) {
+            action.projects.success(function(response) {
                 console.log('all projects', response);
                 $scope.projects = response;
             });
         }
 
         if (action && action.clients != undefined) {
-            action.clients.success(function (response) {
+            action.clients.success(function(response) {
                 console.log('all clients', response);
                 $scope.clients = response;
             });
@@ -188,7 +207,7 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         /*Loading the comments for a project*/
         if (action && action.comments != undefined) {
             $scope.singleProjectId = $routeParams.pid;
-            action.comments.success(function (response) {
+            action.comments.success(function(response) {
                 console.log('all comments', response);
                 $scope.singleProject = response;
                 $scope.comments = response;
@@ -198,7 +217,7 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         /*load single project data*/
         if ($routeParams.id) {
             $scope.singleProjectId = $routeParams.id;
-            projectFactory.getProjectById($routeParams.id).success(function (response) {
+            projectFactory.getProjectById($routeParams.id).success(function(response) {
                 console.log('Single project', response);
                 $scope.singleProject = response;
                 $scope.showSingleProject = true;
@@ -208,18 +227,18 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         if ($routeParams.estimateId) {
 
             /*Get the estimate details by id*/
-            estimateFactory.getEstimateById($routeParams.estimateId).success(function (response) {
+            estimateFactory.getEstimateById($routeParams.estimateId).success(function(response) {
                 console.log('Need to load estimate', response);
                 $scope.singleEstimate = response;
 
                 /*Get the project details by id*/
-                projectFactory.getProjectById(response.project_id).success(function (response) {
+                projectFactory.getProjectById(response.project_id).success(function(response) {
                     console.log('Single project', response);
                     $scope.singleProject = response;
                     $scope.showSingleEstimate = true;
 
                     /*Get time entries for the estimate*/
-                    timeEntry.getEntriesForEstimate($scope.singleEstimate.id).success(function (response) {
+                    timeEntry.getEntriesForEstimate($scope.singleEstimate.id).success(function(response) {
                         $scope.estimateTimes = response;
                         console.log('Time entries', response);
                     });
@@ -238,14 +257,14 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
         });
 
         angular.extend($scope, {
-            saveComment: function (addCommentForm) {
+            saveComment: function(addCommentForm) {
                 if (addCommentForm.$valid) {
                     console.log($scope.newComment, $routeParams.pid);
                     var commentData = {
                         comment: $scope.newComment,
                         project_id: $routeParams.pid
                     };
-                    commentFactory.saveComment(commentData).success(function (response) {
+                    commentFactory.saveComment(commentData).success(function(response) {
                         console.log(response);
                         $scope.singleProject = response;
                         $scope.comments = response;
@@ -256,16 +275,16 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                     snackbar.create("Your form has errors!!", 1000);
                 }
             },
-            deleteProject: function () {
+            deleteProject: function() {
                 var r = confirm("This will delete the project and it's time. Ok?");
                 if (r === true) {
-                    projectFactory.deleteProject($routeParams.id).success(function (response) {
+                    projectFactory.deleteProject($routeParams.id).success(function(response) {
                         $location.path('/projects');
                         snackbar.create("Project deleted", 1000);
                     });
                 }
             },
-            editEstiate: function (editEstimateForm) {
+            editEstiate: function(editEstimateForm) {
                 if (editEstimateForm.$valid) {
                     var estimateData = {
                         id: $scope.singleEstimate.id,
@@ -274,7 +293,7 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                         status: $scope.singleEstimate.status
                     };
 
-                    estimateFactory.updateEstimate(estimateData).success(function (response) {
+                    estimateFactory.updateEstimate(estimateData).success(function(response) {
                         console.log('estimate edited', response);
                         $location.path('/projects/' + $scope.singleProject.id);
                         snackbar.create("Estimate saved", 1000);
@@ -284,14 +303,14 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                     snackbar.create("Your form has errors!!", 1000);
                 }
             },
-            addNewProject: function (addProjectForm) {
+            addNewProject: function(addProjectForm) {
                 if (addProjectForm.$valid) {
                     console.log($scope.newProject);
                     var newProjectData = {
                         name: $scope.newProject.name,
                         client: $scope.newProject.client_id[0].id
                     };
-                    projectFactory.saveNewProject(newProjectData).success(function (response) {
+                    projectFactory.saveNewProject(newProjectData).success(function(response) {
                         console.log('save new project', response);
                         $location.path('/projects');
                         snackbar.create("Project added", 1000);
@@ -301,7 +320,7 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                     snackbar.create("Your form has errors!!", 1000);
                 }
             },
-            saveProjectEstimate: function (addProjectEstimateForm) {
+            saveProjectEstimate: function(addProjectEstimateForm) {
                 if (addProjectEstimateForm.$valid) {
                     console.log('$scope.projectEstimte', $scope.projectEstimte);
                     var estimateData = {
@@ -310,7 +329,7 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                         hours_allocated: $scope.projectEstimte.hours_allocated,
                     };
 
-                    projectFactory.saveProjectEstimate(estimateData).success(function (response) {
+                    projectFactory.saveProjectEstimate(estimateData).success(function(response) {
                         console.log(response);
                         $location.path('/projects/' + $routeParams.id);
                         snackbar.create("Estimate added", 1000);
@@ -373,6 +392,50 @@ myApp.factory('projectFactory', ['$http', function($http) {
     return projectFactory;
 }]);
 
+myApp.factory('timeEntry', ['$http', function($http) {
+    var timeEntry = {};
+
+    timeEntry.getEntries = function() {
+        return $http.get(baseUrl + 'api/time-report');
+    }
+
+    /*timeEntry.getUserList = function() {
+        return $http.get(baseUrl + 'api/get-user-list');
+    }*/
+
+    timeEntry.getSearchResult = function(filterParams) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/time-report-filter',
+            method: 'POST',
+            data: filterParams
+        });
+    }
+
+    timeEntry.getTimeSheetEntryByDate = function() {
+        return $http.get(baseUrl + 'api/get-timeentry-by-date');
+    }
+
+    timeEntry.getEntriesForEstimate = function(estimateId) {
+        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
+    }
+
+    timeEntry.saveBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
+    return timeEntry;
+}]);
+
 myApp.controller('dashboardController', ['$scope', 'timeEntry', '$parse',
     function($scope, timeEntry, $parse) {
         timeEntry.getTimeSheetEntryByDate().success(function(response) {
@@ -394,8 +457,8 @@ myApp.controller('dashboardController', ['$scope', 'timeEntry', '$parse',
     }
 ]);
 
-myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projectFactory',
-    function($scope, timeEntry, $timeout, projectFactory) {
+myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projectFactory', 'userFactory',
+    function($scope, timeEntry, $timeout, projectFactory, userFactory) {
 
         timeEntry.getEntries().then(function(response) {
                 console.log('time entries', response.data);
@@ -406,7 +469,7 @@ myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projec
                 return response;
             })
             .then(function() {
-                timeEntry.getUserList().then(function(response) {
+                userFactory.getUserList().then(function(response) {
                     console.log('user list', response.data);
                     angular.forEach(response.data, function(value, key) {
                         $scope.users.push(value);
@@ -491,37 +554,49 @@ myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projec
     }
 ]);
 
-myApp.factory('timeEntry', ['$http', function($http) {
-    var timeEntry = {};
+/**
+ * Created by amitav on 12/13/15.
+ */
+myApp.factory('commentFactory', ['$http', function($http) {
+    var commentFactory = {};
 
-    timeEntry.getEntries = function() {
-        return $http.get(baseUrl + 'api/time-report');
+    commentFactory.getProjectComments = function(projectId) {
+        console.log('Project id', projectId);
+        return $http.get(baseUrl + 'api/get-project-comments/' + projectId);
     }
 
-    timeEntry.getUserList = function() {
-        return $http.get(baseUrl + 'api/get-user-list');
-    }
-
-    timeEntry.getSearchResult = function(filterParams) {
+    commentFactory.saveComment = function (commentData) {
         return $http({
             headers: {
                 'Content-Type': 'application/json'
             },
-            url: baseUrl + 'api/time-report-filter',
+            url: baseUrl + 'api/save-project-comment',
             method: 'POST',
-            data: filterParams
+            data: commentData
         });
     }
 
-    timeEntry.getTimeSheetEntryByDate = function() {
-        return $http.get(baseUrl + 'api/get-timeentry-by-date');
+    return commentFactory;
+}]);
+
+myApp.factory('clientFactory', ['$http', function($http) {
+    var clientFactory = {};
+
+    clientFactory.getClientList = function() {
+        return $http.get(baseUrl + 'api/get-client-list');
     }
 
-    timeEntry.getEntriesForEstimate = function(estimateId) {
-        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
+    return clientFactory;
+}]);
+
+myApp.factory('userFactory', ['$http', function($http) {
+    var userFactory = {};
+
+    userFactory.getUserList = function() {
+        return $http.get(baseUrl + 'api/get-user-list');
     }
 
-    return timeEntry;
+    return userFactory;
 }]);
 
 //# sourceMappingURL=app.js.map

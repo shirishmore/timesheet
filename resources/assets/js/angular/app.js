@@ -8,7 +8,9 @@ var myApp = angular.module('myApp', [
     'textAngular'
 ]);
 
-myApp.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
+myApp.filter('unsafe', function($sce) {
+    return $sce.trustAsHtml;
+});
 
 myApp.controller('globalController', ['$scope', '$location',
     function($scope, $location) {
@@ -102,6 +104,19 @@ myApp.config(['$routeProvider', '$locationProvider',
             resolve: {
                 action: function() {
                     return 'single';
+                }
+            }
+        });
+
+        /*Management URLs*/
+        $routeProvider.when('/manage/back-date-entry', {
+            templateUrl: '/templates/admin/backdateentry.html',
+            controller: 'adminController',
+            resolve: {
+                action: function(userFactory) {
+                    return {
+                        users: userFactory.getUserList()
+                    };
                 }
             }
         });

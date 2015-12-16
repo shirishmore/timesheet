@@ -36,6 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
     get('time-tracker-add', 'TrackerController@addTracker');
     post('time-tracker-save', 'TrackerController@saveTrackerEntry');
     post('time-tracker-delete', 'TrackerController@deleteTrackerEntry');
+    get('time-tracker/backdate/{otp}/{uid}', 'TrackerController@backdateTimeEntry');
 
     get('tags', 'TagController@index');
     post('tags/save', 'TagController@create');
@@ -58,8 +59,6 @@ Route::group(['middleware' => 'auth'], function () {
         get('project-wise-detailed-download/{sdate}/{edate}', 'ManagerController@downloadProjectWiseDetailedReport');
         get('date-wise-download/{sdate}/{edate}', 'ManagerController@downloadDateWiseReport');
         get('create-pie-chart/{sdate}/{edate}', 'ManagerController@createPieChart');
-
-        get('backdate-time-entry', 'AdminController@backDateTimeEntry');
     });
 
     Route::group(['prefix' => 'api'], function () {
@@ -78,6 +77,7 @@ Route::group(['middleware' => 'auth'], function () {
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
         post('save-new-project', 'ApiController@saveNewProject');
         post('delete-project', 'ApiController@deleteProjectById');
+        post('allow-backdate-entry', 'ApiController@allowBackdateEntry');
     });
 
     Route::group(['prefix' => 'spa'], function () {
