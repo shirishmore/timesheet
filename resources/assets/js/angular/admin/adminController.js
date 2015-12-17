@@ -1,5 +1,5 @@
-myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
-    function($scope, action, timeEntry) {
+myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar',
+    function($scope, action, timeEntry, snackbar) {
 
         /*check if users are loaded*/
         if (action && action.users != undefined) {
@@ -9,9 +9,17 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
             });
         }
 
+        if (action && action.allEntries != undefined) {
+            action.allEntries.success(function(response) {
+                console.log('all Entries', response);
+                $scope.allEntries = response;
+            });
+        }
+
         /*Variables*/
         angular.extend($scope, {
-            backdateEntry: {}
+            backdateEntry: {},
+            allEntries: {}
         });
 
         /*Methods*/
@@ -31,6 +39,8 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
 
                 timeEntry.saveBackDateEntry(entryData).success(function(response) {
                     console.log('response', response);
+                    $scope.allEntries = response;
+                    snackbar.create("Entry added and mail sent.", 1000);
                 });
             }
         });

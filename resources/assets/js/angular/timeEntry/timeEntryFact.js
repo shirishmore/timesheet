@@ -28,6 +28,10 @@ myApp.factory('timeEntry', ['$http', function($http) {
         return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
     }
 
+    timeEntry.getBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-backdate-entries');
+    }
+
     timeEntry.saveBackDateEntry = function(entryData) {
         return $http({
             headers: {

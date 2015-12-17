@@ -77,6 +77,7 @@ Route::group(['middleware' => 'auth'], function () {
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
         post('save-new-project', 'ApiController@saveNewProject');
         post('delete-project', 'ApiController@deleteProjectById');
+        get('get-backdate-entries', 'ApiController@getBackDateEntries');
         post('allow-backdate-entry', 'ApiController@allowBackdateEntry');
     });
 

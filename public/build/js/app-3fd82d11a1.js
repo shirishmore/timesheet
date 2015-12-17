@@ -113,9 +113,10 @@ myApp.config(['$routeProvider', '$locationProvider',
             templateUrl: '/templates/admin/backdateentry.html',
             controller: 'adminController',
             resolve: {
-                action: function(userFactory) {
+                action: function(userFactory, timeEntry) {
                     return {
-                        users: userFactory.getUserList()
+                        users: userFactory.getUserList(),
+                        allEntries: timeEntry.getBackDateEntries()
                     };
                 }
             }
@@ -125,8 +126,8 @@ myApp.config(['$routeProvider', '$locationProvider',
     }
 ]);
 
-myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
-    function($scope, action, timeEntry) {
+myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar',
+    function($scope, action, timeEntry, snackbar) {
 
         /*check if users are loaded*/
         if (action && action.users != undefined) {
@@ -136,9 +137,17 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
             });
         }
 
+        if (action && action.allEntries != undefined) {
+            action.allEntries.success(function(response) {
+                console.log('all Entries', response);
+                $scope.allEntries = response;
+            });
+        }
+
         /*Variables*/
         angular.extend($scope, {
-            backdateEntry: {}
+            backdateEntry: {},
+            allEntries: {}
         });
 
         /*Methods*/
@@ -158,11 +167,23 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry',
 
                 timeEntry.saveBackDateEntry(entryData).success(function(response) {
                     console.log('response', response);
+                    $scope.allEntries = response;
+                    snackbar.create("Entry added and mail sent.", 1000);
                 });
             }
         });
     }
 ]);
+
+myApp.factory('clientFactory', ['$http', function($http) {
+    var clientFactory = {};
+
+    clientFactory.getClientList = function() {
+        return $http.get(baseUrl + 'api/get-client-list');
+    }
+
+    return clientFactory;
+}]);
 
 myApp.factory('estimateFactory', ['$http', function($http) {
     var estimateFactory = {};
@@ -392,48 +413,29 @@ myApp.factory('projectFactory', ['$http', function($http) {
     return projectFactory;
 }]);
 
-myApp.factory('timeEntry', ['$http', function($http) {
-    var timeEntry = {};
+/**
+ * Created by amitav on 12/13/15.
+ */
+myApp.factory('commentFactory', ['$http', function($http) {
+    var commentFactory = {};
 
-    timeEntry.getEntries = function() {
-        return $http.get(baseUrl + 'api/time-report');
+    commentFactory.getProjectComments = function(projectId) {
+        console.log('Project id', projectId);
+        return $http.get(baseUrl + 'api/get-project-comments/' + projectId);
     }
 
-    /*timeEntry.getUserList = function() {
-        return $http.get(baseUrl + 'api/get-user-list');
-    }*/
-
-    timeEntry.getSearchResult = function(filterParams) {
+    commentFactory.saveComment = function (commentData) {
         return $http({
             headers: {
                 'Content-Type': 'application/json'
             },
-            url: baseUrl + 'api/time-report-filter',
+            url: baseUrl + 'api/save-project-comment',
             method: 'POST',
-            data: filterParams
+            data: commentData
         });
     }
 
-    timeEntry.getTimeSheetEntryByDate = function() {
-        return $http.get(baseUrl + 'api/get-timeentry-by-date');
-    }
-
-    timeEntry.getEntriesForEstimate = function(estimateId) {
-        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
-    }
-
-    timeEntry.saveBackDateEntry = function(entryData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/allow-backdate-entry',
-            method: 'POST',
-            data: entryData
-        });
-    }
-
-    return timeEntry;
+    return commentFactory;
 }]);
 
 myApp.controller('dashboardController', ['$scope', 'timeEntry', '$parse',
@@ -554,39 +556,52 @@ myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projec
     }
 ]);
 
-/**
- * Created by amitav on 12/13/15.
- */
-myApp.factory('commentFactory', ['$http', function($http) {
-    var commentFactory = {};
+myApp.factory('timeEntry', ['$http', function($http) {
+    var timeEntry = {};
 
-    commentFactory.getProjectComments = function(projectId) {
-        console.log('Project id', projectId);
-        return $http.get(baseUrl + 'api/get-project-comments/' + projectId);
+    timeEntry.getEntries = function() {
+        return $http.get(baseUrl + 'api/time-report');
     }
 
-    commentFactory.saveComment = function (commentData) {
+    /*timeEntry.getUserList = function() {
+        return $http.get(baseUrl + 'api/get-user-list');
+    }*/
+
+    timeEntry.getSearchResult = function(filterParams) {
         return $http({
             headers: {
                 'Content-Type': 'application/json'
             },
-            url: baseUrl + 'api/save-project-comment',
+            url: baseUrl + 'api/time-report-filter',
             method: 'POST',
-            data: commentData
+            data: filterParams
         });
     }
 
-    return commentFactory;
-}]);
-
-myApp.factory('clientFactory', ['$http', function($http) {
-    var clientFactory = {};
-
-    clientFactory.getClientList = function() {
-        return $http.get(baseUrl + 'api/get-client-list');
+    timeEntry.getTimeSheetEntryByDate = function() {
+        return $http.get(baseUrl + 'api/get-timeentry-by-date');
     }
 
-    return clientFactory;
+    timeEntry.getEntriesForEstimate = function(estimateId) {
+        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
+    }
+
+    timeEntry.getBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-backdate-entries');
+    }
+
+    timeEntry.saveBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
+    return timeEntry;
 }]);
 
 myApp.factory('userFactory', ['$http', function($http) {

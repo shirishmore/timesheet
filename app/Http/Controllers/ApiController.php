@@ -6,6 +6,7 @@ use App\Client;
 use App\Comment;
 use App\Estimate;
 use App\Project;
+use App\Services\Interfaces\SendMailInterface;
 use App\TimeEntry;
 use App\User;
 use Carbon\Carbon;
@@ -269,7 +270,16 @@ class ApiController extends Controller
         return response($project, 201);
     }
 
-    public function allowBackdateEntry(Request $request)
+    public function getBackDateEntries()
+    {
+        $timeEntryObj = new TimeEntry;
+
+        $backdate_entries = $timeEntryObj->getLatestTimeEntries();
+
+        return response($backdate_entries, 200);
+    }
+
+    public function allowBackdateEntry(Request $request, SendMailInterface $mail)
     {
         // return $request->all();
         $date = Carbon::parse($request->input('date'));
@@ -285,5 +295,23 @@ class ApiController extends Controller
         }
 
         DB::table('backdate_timeentry')->insert($data);
+
+        foreach ($data as $entry) {
+            $user = User::find($entry['user_id']);
+            $mail->mail([
+                'from' => 'amitav.roy@focalworks.in',
+                'fromName' => 'Amitav Roy',
+                'to' => $user->email,
+                'toName' => $user->name,
+                'subject' => 'Make backdate entry',
+                'mailBody' => view('mails.backdate-mail', compact('entry')),
+            ]);
+        }
+
+        $timeEntryObj = new TimeEntry;
+
+        $backdate_entries = $timeEntryObj->getLatestTimeEntries();
+
+        return response($backdate_entries, 200);
     }
 }

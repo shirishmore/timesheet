@@ -113,9 +113,10 @@ myApp.config(['$routeProvider', '$locationProvider',
             templateUrl: '/templates/admin/backdateentry.html',
             controller: 'adminController',
             resolve: {
-                action: function(userFactory) {
+                action: function(userFactory, timeEntry) {
                     return {
-                        users: userFactory.getUserList()
+                        users: userFactory.getUserList(),
+                        allEntries: timeEntry.getBackDateEntries()
                     };
                 }
             }
