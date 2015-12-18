@@ -84,32 +84,44 @@ class TrackerController extends Controller
             DB::beginTransaction();
             $project = Project::with('client')->find($request->input('project_id'));
 
-            $entry = TimeEntry::create([
+            // if the user id is set, it means it's a backdate entry
+            $userId = Auth::user()->id;
+            $createdAt = Carbon::now();
+            $updatedAt = Carbon::now();
+            if ($request->input('user_id')) {
+                $userId = $request->input('user_id');
+                $createdAt = Carbon::parse($request->input('date'));
+                $updatedAt = Carbon::parse($request->input('date'));
+            }
+
+            $entryId = DB::table('time_entries')->insertGetId([
                 'desc' => $request->input('desc'),
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'project_id' => $project->id,
                 'project_name' => $project->name,
                 'client_name' => $project->client->name,
                 'time' => $request->input('time'),
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
             ]);
 
             // adding the entry of the ticket with tags mapping table
             foreach ($request->input('tags') as $key => $value) {
                 DB::table('taggables')->insert([
                     'tag_id' => $value,
-                    'taggable_id' => $entry->id,
+                    'taggable_id' => $entryId,
                     'taggable_type' => 'ticket',
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
                 ]);
             }
 
             if ($request->input('estimate_id') && $request->input('estimate_id') != 0) {
                 DB::table('time_entry_estimates')->insert([
-                    'time_entry_id' => $entry->id,
+                    'time_entry_id' => $entryId,
                     'estimate_id' => $request->input('estimate_id'),
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
                 ]);
 
                 DB::update("UPDATE estimates SET hours_consumed = hours_consumed + :hours WHERE id = :id", [
@@ -149,5 +161,28 @@ class TrackerController extends Controller
         $entry->delete();
 
         DB::table('time_entry_estimates')->where('time_entry_id', $entry->id)->delete();
+
+        DB::table('taggables')
+            ->where('taggable_id', $entry->id)
+            ->where('taggable_type', 'ticket')
+            ->delete();
+    }
+
+    public function backdateTimeEntry($otp, $userId)
+    {
+        $projects = Project::with('client')->get();
+        $tags = Tag::all();
+
+        $otp = DB::table('backdate_timeentry')
+            ->where('otp', $otp)
+            ->where('user_id', $userId)
+            ->where('status', 1)
+            ->first();
+
+        if (!$otp) {
+            abort(403, 'Wrong url');
+        }
+
+        return view('manager.backdate-form', compact('projects', 'tags', 'otp'));
     }
 }

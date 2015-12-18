@@ -5,9 +5,9 @@ myApp.factory('timeEntry', ['$http', function($http) {
         return $http.get(baseUrl + 'api/time-report');
     }
 
-    timeEntry.getUserList = function() {
+    /*timeEntry.getUserList = function() {
         return $http.get(baseUrl + 'api/get-user-list');
-    }
+    }*/
 
     timeEntry.getSearchResult = function(filterParams) {
         return $http({
@@ -26,6 +26,21 @@ myApp.factory('timeEntry', ['$http', function($http) {
 
     timeEntry.getEntriesForEstimate = function(estimateId) {
         return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
+    }
+
+    timeEntry.getBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-backdate-entries');
+    }
+
+    timeEntry.saveBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
     }
 
     return timeEntry;

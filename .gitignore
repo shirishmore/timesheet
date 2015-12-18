@@ -7,6 +7,5 @@ Homestead.json
 .bin
 public/bower_components
 database.sqlite
-public/build
 public/css
 public/js

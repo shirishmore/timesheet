@@ -36,6 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
     get('time-tracker-add', 'TrackerController@addTracker');
     post('time-tracker-save', 'TrackerController@saveTrackerEntry');
     post('time-tracker-delete', 'TrackerController@deleteTrackerEntry');
+    get('time-tracker/backdate/{otp}/{uid}', 'TrackerController@backdateTimeEntry');
 
     get('tags', 'TagController@index');
     post('tags/save', 'TagController@create');
@@ -76,6 +77,9 @@ Route::group(['middleware' => 'auth'], function () {
         post('save-project-estimate', 'ApiController@saveProjectEstimate');
         post('save-new-project', 'ApiController@saveNewProject');
         post('delete-project', 'ApiController@deleteProjectById');
+        get('get-backdate-entries', 'ApiController@getBackDateEntries');
+        post('allow-backdate-entry', 'ApiController@allowBackdateEntry');
+        get('get-backdate-entry/{id}', 'ApiController@getBackDateEntryById');
     });
 
     Route::group(['prefix' => 'spa'], function () {
