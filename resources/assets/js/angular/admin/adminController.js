@@ -34,9 +34,11 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
                 if (backdateEntryForm.$valid) {
                     /*get all the user ids*/
                     var userIds = [];
-                    angular.forEach($scope.backdateEntry.users, function(value, key) {
-                        userIds.push(value.id);
-                    });
+                    if ($scope.backdateEntry != undefined) {
+                        angular.forEach($scope.backdateEntry.users, function(value, key) {
+                            userIds.push(value.id);
+                        });
+                    }
 
                     /*create the post data*/
                     var entryData = {
