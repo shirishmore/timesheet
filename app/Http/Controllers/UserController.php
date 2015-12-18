@@ -63,11 +63,11 @@ class UserController extends Controller
 
             foreach ($userRoles as $role) {
                 if (in_array($role->role, $allowed)) {
-                    return Redirect::to('spa/time-tracker-report');
+                    return redirect()->intended('spa/time-tracker-report');
                 }
             }
 
-            return Redirect::to('home');
+            return redirect()->intended('home');
         }
 
         Session::flash('message', 'There was a problem logging you in. Please check your credentials and try again');

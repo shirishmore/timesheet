@@ -1,0 +1,53 @@
+<div ng-include="reportTabUrl" scope="" onload=""></div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h3>Backdate entry</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-4">
+        <form name="backdateEntryForm" ng-submit="backdateEntrySubmit(backdateEntryForm)">
+            <div class="form-group">
+                <label>User</label>
+                <oi-select
+                oi-options="user.name for user in users track by user.id"
+                ng-model="backdateEntry.users"
+                multiple placeholder="Select User"
+                ></oi-select>
+            </div>
+
+            <datepicker date-format="yyyy-M-dd">
+                <input ng-model="backdateEntry.backdate" type="text" class="form-control" placeholder="Select date" />
+                <br />
+            </datepicker>
+
+            <div text-angular ng-model="backdateEntry.reason" 
+            ta-toolbar="[['bold','italics', 'underline']]"
+            style="font-size: 1.5em"></div>
+            <br />
+            <button class="btn btn-success">Save</button>
+        </form>
+    </div>
+
+    <div class="col-sm-8" ng-show="showEntries">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Back date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ng-repeat="entry in allEntries">
+                    <td>
+                        <a href="#/manage/view-back-date-entry/{{ entry.id }}">{{entry.name}}</a>
+                    </td>
+                    <td>{{entry.backdate}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
