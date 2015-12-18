@@ -287,18 +287,19 @@ class ApiController extends Controller
 
         $data = [];
         foreach ($userIds as $id) {
+            $otp = uniqid();
             // create the data
             $data[] = [
                 'user_id' => $id,
                 'backdate' => $date,
-                'otp' => uniqid(),
+                'otp' => $otp,
             ];
 
             // add the backdate entry
             $backdateId = DB::table('backdate_timeentry')->insertGetId([
                 'user_id' => $id,
                 'backdate' => $date,
-                'otp' => uniqid(),
+                'otp' => $otp,
             ]);
 
             // make an entry if the comment is added
