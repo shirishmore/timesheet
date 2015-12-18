@@ -121,6 +121,18 @@ myApp.config(['$routeProvider', '$locationProvider',
                 }
             }
         });
+        $routeProvider.when('/manage/view-back-date-entry/:backdateentryId', {
+            templateUrl: '/templates/admin/view-backdateentry.html',
+            controller: 'adminController',
+            resolve: {
+                action: function(userFactory, timeEntry) {
+                    return {
+                        users: userFactory.getUserList(),
+                        allEntries: timeEntry.getBackDateEntries()
+                    };
+                }
+            }
+        });
 
         $routeProvider.otherwise('/');
     }

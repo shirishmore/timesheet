@@ -137,7 +137,7 @@ class TimeEntry extends Model
         return $query;
     }
 
-    public function getLatestTimeEntries()
+    public function getLatestBackdateTimeEntries()
     {
         return DB::table('backdate_timeentry as bt')
             ->join('users as u', 'u.id', '=', 'bt.user_id')

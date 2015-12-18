@@ -85,7 +85,7 @@ class ApiController extends Controller
             'status' => 1,
         ]);
 
-        $project = \App\Project::find($request->input('project_id'));
+        $project = Project::find($request->input('project_id'));
         $project->comments()->save($comment);
 
         $result = $this->getProjectComments($request->input('project_id'));
@@ -274,7 +274,7 @@ class ApiController extends Controller
     {
         $timeEntryObj = new TimeEntry;
 
-        $backdate_entries = $timeEntryObj->getLatestTimeEntries();
+        $backdate_entries = $timeEntryObj->getLatestBackdateTimeEntries();
 
         return response($backdate_entries, 200);
     }
@@ -287,31 +287,66 @@ class ApiController extends Controller
 
         $data = [];
         foreach ($userIds as $id) {
+            // create the data
             $data[] = [
                 'user_id' => $id,
                 'backdate' => $date,
                 'otp' => uniqid(),
             ];
+
+            // add the backdate entry
+            $backdateId = DB::table('backdate_timeentry')->insertGetId([
+                'user_id' => $id,
+                'backdate' => $date,
+                'otp' => uniqid(),
+            ]);
+
+            // make an entry if the comment is added
+            if ($request->input('comment')) {
+                $comment = Comment::create([
+                    'user_id' => Auth::user()->id,
+                    'comment' => $request->input('comment'),
+                    'parent_id' => 0,
+                    'thread' => '',
+                    'status' => 1,
+                ]);
+
+                DB::table('commentables')->insert([
+                    'comment_id' => $comment->id,
+                    'commentable_id' => $backdateId,
+                    'commentable_type' => 'backdate_timeentry',
+                ]);
+            }
         }
 
-        DB::table('backdate_timeentry')->insert($data);
-
+        // send the email to each developer
         foreach ($data as $entry) {
             $user = User::find($entry['user_id']);
+            $comment = '';
+
+            if ($request->input('comment')) {
+                $comment = $request->input('comment');
+            }
+
             $mail->mail([
                 'from' => 'amitav.roy@focalworks.in',
                 'fromName' => 'Amitav Roy',
                 'to' => $user->email,
                 'toName' => $user->name,
                 'subject' => 'Make backdate entry',
-                'mailBody' => view('mails.backdate-mail', compact('entry')),
+                'mailBody' => view('mails.backdate-mail', compact('entry', 'comment')),
             ]);
         }
 
         $timeEntryObj = new TimeEntry;
 
-        $backdate_entries = $timeEntryObj->getLatestTimeEntries();
+        $backdate_entries = $timeEntryObj->getLatestBackdateTimeEntries();
 
         return response($backdate_entries, 200);
+    }
+
+    public function getBackDateEntryById($id)
+    {
+
     }
 }

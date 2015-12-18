@@ -17,6 +17,7 @@ class CreateBackdateTimeentryTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->string('otp');
             $table->date('backdate');
+            $table->boolean('status')->default(1);
         });
     }
 

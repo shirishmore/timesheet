@@ -173,7 +173,11 @@ class TrackerController extends Controller
         $projects = Project::with('client')->get();
         $tags = Tag::all();
 
-        $otp = DB::table('backdate_timeentry')->where('otp', $otp)->where('user_id', $userId)->first();
+        $otp = DB::table('backdate_timeentry')
+            ->where('otp', $otp)
+            ->where('user_id', $userId)
+            ->where('status', 1)
+            ->first();
 
         if (!$otp) {
             abort(403, 'Wrong url');

@@ -8,4 +8,12 @@
       <p><a href="{{url('time-tracker/backdate/' . $entry['otp'] . '/' . $entry['user_id'])}}">Click here</a></p>
     </td>
   </tr>
+  @if ($comment != '')
+  <tr>
+    <td bgcolor="#F0F0F0" align="center">
+      <p><strong>Reason</strong></p>
+      <p>{!!$comment!!}</p>
+    </td>
+  </tr>
+  @endif
 </table>

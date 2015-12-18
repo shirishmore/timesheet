@@ -79,6 +79,7 @@ Route::group(['middleware' => 'auth'], function () {
         post('delete-project', 'ApiController@deleteProjectById');
         get('get-backdate-entries', 'ApiController@getBackDateEntries');
         post('allow-backdate-entry', 'ApiController@allowBackdateEntry');
+        get('get-backdate-entry/{id}', 'ApiController@getBackDateEntryById');
     });
 
     Route::group(['prefix' => 'spa'], function () {

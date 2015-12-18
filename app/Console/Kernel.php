@@ -31,6 +31,6 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('backup:dbdaily')->dailyAt('16:00'); // IST 9:30 PM
         $schedule->command('backup:dbdaily')->dailyAt('10:30'); // IST 2:30 PM
-        $schedule->command('clear-backdates')->daily(); // this will run @ midnight everyday
+        //$schedule->command('clear-backdates')->daily(); // this will run @ midnight everyday
     }
 }

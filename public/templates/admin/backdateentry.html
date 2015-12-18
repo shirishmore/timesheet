@@ -23,6 +23,10 @@
                 <br />
             </datepicker>
 
+            <div text-angular ng-model="backdateEntry.reason" 
+            ta-toolbar="[['bold','italics', 'underline']]"
+            style="font-size: 1.5em"></div>
+            <br />
             <button class="btn btn-success">Save</button>
         </form>
     </div>
@@ -38,7 +42,9 @@
 
             <tbody>
                 <tr ng-repeat="entry in allEntries">
-                    <td>{{entry.name}}</td>
+                    <td>
+                        <a href="#/manage/view-back-date-entry/{{ entry.id }}">{{entry.name}}</a>
+                    </td>
                     <td>{{entry.backdate}}</td>
                 </tr>
             </tbody>
