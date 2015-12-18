@@ -13,41 +13,46 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
             window.document.title = 'Backdate entry';
 
             action.allEntries.success(function(response) {
-                console.log('all Entries', response);
-                $scope.allEntries = response;
+                if (response.length != 0) {
+                    console.log('all Entries', response.length);
+                    $scope.allEntries = response;
+                    $scope.showEntries = true;
+                }
             });
         }
 
         /*Variables*/
         angular.extend($scope, {
             backdateEntry: {},
-            allEntries: {}
+            allEntries: {},
+            showEntries: false
         });
 
         /*Methods*/
         angular.extend($scope, {
             backdateEntrySubmit: function(backdateEntryForm) {
-                console.log($scope.backdateEntry);
+                if (backdateEntryForm.$valid) {
+                    /*get all the user ids*/
+                    var userIds = [];
+                    angular.forEach($scope.backdateEntry.users, function(value, key) {
+                        userIds.push(value.id);
+                    });
 
-                /*get all the user ids*/
-                var userIds = [];
-                angular.forEach($scope.backdateEntry.users, function(value, key) {
-                    userIds.push(value.id);
-                });
+                    /*create the post data*/
+                    var entryData = {
+                        date: $scope.backdateEntry.backdate,
+                        users: userIds,
+                        comment: $scope.backdateEntry.reason
+                    };
 
-                /*create the post data*/
-                var entryData = {
-                    date: $scope.backdateEntry.backdate,
-                    users: userIds,
-                    comment: $scope.backdateEntry.reason
-                };
-
-                timeEntry.saveBackDateEntry(entryData).success(function(response) {
-                    console.log('response', response);
-                    $scope.allEntries = response;
-                    $scope.backdateEntry = {};
-                    snackbar.create("Entry added and mail sent.", 1000);
-                });
+                    timeEntry.saveBackDateEntry(entryData).success(function(response) {
+                        console.log('backdate entries', response);
+                        $scope.allEntries = response;
+                        $scope.backdateEntry = {};
+                        $scope.showEntries = true;
+                        snackbar.create("Entry added and mail sent.", 1000);
+                    });
+                }
             }
         });
     }
