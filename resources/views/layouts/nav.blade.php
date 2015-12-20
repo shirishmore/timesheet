@@ -14,7 +14,7 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="{{ url('project') }}"><i class="fa fa-product-hunt"></i> Projects</a></li>
+        {{-- <li><a href="{{ url('project') }}"><i class="fa fa-product-hunt"></i> Projects</a></li> --}}
         @if (Gate::allows('viewClients', new \App\Client))
         <li><a href="{{ url('clients') }}"><i class="fa fa-user"></i> Clients</a></li>
         @endif
@@ -24,7 +24,7 @@
           <ul class="dropdown-menu">
             <li><a href="{{ url('time-tracker') }}">My Entries</a></li>
             <li><a href="{{ url('time-tracker-add') }}">Add Entry</a></li>
-            <li><a href="{{ url('spa/time-tracker-report#/manage/back-date-entry') }}">Backdate Entry</a></li>
+            <li><a href="{{ url('spa/time-tracker-report#/manage/back-date-entry') }}"><i class="fa fa-backward"></i> Backdate Entry</a></li>
             @if (Gate::allows('viewTrackerReport', new \App\TimeEntry))
             <li role="separator" class="divider"></li>
             <li><a href="{{ url('spa/time-tracker-report#/projects') }}"><i class="fa fa-briefcase"></i> Projects</a></li>
