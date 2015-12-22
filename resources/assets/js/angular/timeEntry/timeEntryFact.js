@@ -43,5 +43,20 @@ myApp.factory('timeEntry', ['$http', function($http) {
         });
     }
 
+    timeEntry.getRequestBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-request-backdate-entries');
+    }
+
+    timeEntry.saveRequestBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-request-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
     return timeEntry;
 }]);

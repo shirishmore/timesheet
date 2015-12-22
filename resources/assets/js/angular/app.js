@@ -167,8 +167,12 @@ myApp.config(['$routeProvider', '$locationProvider',
             templateUrl: '/templates/users/request-backdate.html',
             controller: 'userController',
             resolve: {
-                action: function() {
-                    return 'single';
+                action: function(userFactory, timeEntry) {
+                    return {
+                        users: userFactory.getUserListByRole(),
+                        allEntries: timeEntry.getRequestBackDateEntries()
+                    };
+
                 }
             }
         });
