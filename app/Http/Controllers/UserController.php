@@ -77,7 +77,7 @@ class UserController extends Controller
     public function doLogout()
     {
         Auth::logout(); // log the user out of our application
-        return Redirect::to('/'); // redirect the user to the login screen
+        return response('user logged out', 200);
     }
 
     public function create()

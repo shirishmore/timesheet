@@ -47,6 +47,7 @@
   <script type="text/javascript" src="{{ url('vendor/bootstrap.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/script.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/angular.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url('vendor/angular-cookies.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/angular-route.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/select.min.js') }}"></script>
   <script type="text/javascript" src="{{ url('vendor/select-tpls.min.js') }}"></script>
