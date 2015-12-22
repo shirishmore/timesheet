@@ -15,8 +15,9 @@ myApp.factory('userFactory', ['$http', '$cookies',
             return $http.get(baseUrl + 'api/get-user_data');
         }
 
-        userFactory.getUserListByRole = function(roleId) {
+        userFactory.getUserListByRole = function() {
             /*Code for loading users by role id*/
+            return $http.get(baseUrl + 'api/get-user-list-by-role')
         }
 
         return userFactory;

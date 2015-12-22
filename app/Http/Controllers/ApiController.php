@@ -53,6 +53,28 @@ class ApiController extends Controller
     {
         return User::orderBy('name')->get();
     }
+    /**
+     * Get the list of users by role in the system
+     *
+     * @return mixed
+     */
+    public function getUserListByRole()
+    {
+
+        $select = [
+            'u.name as name',
+            'u.id as id',
+        ];
+        $query = DB::table('users as u');
+        $query->select($select);
+        $query->join('roles_users as ru', 'u.id', '=', 'ru.user_id');
+        $query->join('roles as r', 'r.id', '=', 'ru.role_id');
+        $query->whereRaw('ru.role_id IN (1,3)');
+        //$query->where('ru.role_id', $roleId);
+        $result = $query->get();
+        return $result;
+        //return User::orderBy('name')->get();
+    }
 
     /**
      * Get the list of projects in the system with client and estimate data
@@ -294,6 +316,15 @@ class ApiController extends Controller
         return response($backdate_entries, 200);
     }
 
+    public function getRequestBackDateEntries()
+    {
+        $timeEntryObj = new TimeEntry;
+
+        $request_backdate_entries = $timeEntryObj->getLatestRequestBackdateTimeEntries();
+
+        return response($request_backdate_entries, 200);
+    }
+
     public function allowBackdateEntry(Request $request, SendMailInterface $mail)
     {
         // return $request->all();
@@ -363,5 +394,74 @@ class ApiController extends Controller
 
     public function getBackDateEntryById($id)
     {
+    }
+
+    public function allowRequestBackdateEntry(Request $request, SendMailInterface $mail)
+    {
+        // return $request->all();
+        $date = Carbon::parse($request->input('date'));
+        $userIds = $request->input('users');
+
+        $data = [];
+        foreach ($userIds as $id) {
+            $otp = uniqid();
+            // create the data
+            $data[] = [
+                'user_id' => Auth::user()->id,
+                'project_manager_id' => $id,
+                'backdate' => $date,
+                'otp' => $otp,
+            ];
+
+            // add the backdate entry
+            $requestBackdateId = DB::table('backdate_requests')->insertGetId([
+                'user_id' => Auth::user()->id,
+                'project_manager_id' => $id,
+                'backdate' => $date,
+                'otp' => $otp,
+            ]);
+
+            // make an entry if the comment is added
+            if ($request->input('comment')) {
+                $comment = Comment::create([
+                    'user_id' => Auth::user()->id,
+                    'comment' => $request->input('comment'),
+                    'parent_id' => 0,
+                    'thread' => '',
+                    'status' => 1,
+                ]);
+
+                DB::table('commentables')->insert([
+                    'comment_id' => $comment->id,
+                    'commentable_id' => $requestBackdateId,
+                    'commentable_type' => 'backdate_request',
+                ]);
+            }
+        }
+
+        // send the email to each developer
+        foreach ($data as $entry) {
+            $user = User::find($entry['project_manager_id']);
+            $comment = '';
+
+            if ($request->input('comment')) {
+                $comment = $request->input('comment');
+            }
+
+            $mail->mail([
+                'from' => 'amitav.roy@focalworks.in',
+                'fromName' => 'Amitav Roy',
+                'to' => $user->email,
+                'toName' => $user->name,
+                'subject' => 'Request backdate entry',
+                'mailBody' => view('mails.backdate-mail', compact('entry', 'comment')),
+            ]);
+        }
+
+        $timeEntryObj = new TimeEntry;
+
+        $request_backdate_entries = $timeEntryObj->getLatestRequestBackdateTimeEntries();
+
+        return response($request_backdate_entries, 200);
     }
 }

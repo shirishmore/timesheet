@@ -65,6 +65,7 @@ Route::group(['middleware' => 'auth'], function () {
         get('time-report', 'ApiController@getFilterReport');
         get('get-user_data', 'ApiController@getUserObjById');
         get('get-user-list', 'ApiController@getUserList');
+        get('get-user-list-by-role', 'ApiController@getUserListByRole');
         get('get-project-list', 'ApiController@getProjectList');
         get('get-client-list', 'ApiController@getClientList');
         get('get-project-comments/{id}', 'ApiController@getProjectComments');
@@ -81,6 +82,8 @@ Route::group(['middleware' => 'auth'], function () {
         get('get-backdate-entries', 'ApiController@getBackDateEntries');
         post('allow-backdate-entry', 'ApiController@allowBackdateEntry');
         get('get-backdate-entry/{id}', 'ApiController@getBackDateEntryById');
+        get('get-request-backdate-entries', 'ApiController@getRequestBackDateEntries');
+        post('allow-request-backdate-entry', 'ApiController@allowRequestBackdateEntry');
     });
 
     Route::group(['prefix' => 'spa'], function () {
