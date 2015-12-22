@@ -18,6 +18,21 @@ use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
+    public function getUserObjById()
+    {
+        $user = User::find(Auth::user()->id);
+
+        $select = ['ru.role_id as roleId', 'r.name as roleName'];
+
+        $user->roles = DB::table('roles_users as ru')
+             ->select($select)
+             ->where('ru.user_id', Auth::user()->id)
+             ->join('roles as r', 'r.id', '=', 'ru.role_id')
+             ->get();
+
+        return $user;
+    }
+
     /**
      *
      * @param Request $request
@@ -348,6 +363,5 @@ class ApiController extends Controller
 
     public function getBackDateEntryById($id)
     {
-
     }
 }

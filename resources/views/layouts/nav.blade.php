@@ -24,9 +24,10 @@
           <ul class="dropdown-menu">
             <li><a href="{{ url('time-tracker') }}">My Entries</a></li>
             <li><a href="{{ url('time-tracker-add') }}">Add Entry</a></li>
-            <li><a href="{{ url('spa/time-tracker-report#/manage/back-date-entry') }}"><i class="fa fa-backward"></i> Backdate Entry</a></li>
+            <li><a href="{{ url('/') }}">Request backdate entry</a></li>
             @if (Gate::allows('viewTrackerReport', new \App\TimeEntry))
             <li role="separator" class="divider"></li>
+            <li><a href="{{ url('spa/time-tracker-report#/manage/back-date-entry') }}"><i class="fa fa-backward"></i> Backdate Entry</a></li>
             <li><a href="{{ url('spa/time-tracker-report#/projects') }}"><i class="fa fa-briefcase"></i> Projects</a></li>
             <li><a href="{{ url('spa/time-tracker-report') }}"><i class="fa fa-table"></i> Reports</a></li>
             <li><a href="{{ url('spa/time-tracker-download') }}"><i class="fa fa-file-excel-o"></i> Download Report</a></li>
@@ -52,7 +53,8 @@
             <li><a href="{{url('user/edit-profile')}}"><i class="fa fa-user"></i> Edit profile</a></li>
             <li><a href="{{url('user/change-password')}}"><i class="fa fa-key"></i> Change password</a></li>
             <li role="separator" class="divider"></li>
-            <li><a href="{{url('logout')}}"><i class="fa fa-sign-out"></i> Logout</a></li>
+            {{-- <li><a href="{{url('logout')}}"><i class="fa fa-sign-out"></i> Logout</a></li> --}}
+            <li><a href="{{url('spa/time-tracker-report#/logout')}}"><i class="fa fa-sign-out"></i> Logout</a></li>
           </ul>
         </li>
       </ul>
