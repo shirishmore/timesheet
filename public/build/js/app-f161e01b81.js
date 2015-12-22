@@ -138,91 +138,14 @@ myApp.config(['$routeProvider', '$locationProvider',
     }
 ]);
 
-myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar',
-    function($scope, action, timeEntry, snackbar) {
+myApp.factory('clientFactory', ['$http', function($http) {
+    var clientFactory = {};
 
-        /*check if users are loaded*/
-        if (action && action.users != undefined) {
-            action.users.success(function(response) {
-                console.log('all users', response);
-                $scope.users = response;
-            });
-        }
-
-        if (action && action.allEntries != undefined) {
-            window.document.title = 'Backdate entry';
-
-            action.allEntries.success(function(response) {
-                if (response.length != 0) {
-                    console.log('all Entries', response.length);
-                    $scope.allEntries = response;
-                    $scope.showEntries = true;
-                }
-            });
-        }
-
-        /*Variables*/
-        angular.extend($scope, {
-            backdateEntry: {},
-            allEntries: {},
-            showEntries: false
-        });
-
-        /*Methods*/
-        angular.extend($scope, {
-            backdateEntrySubmit: function(backdateEntryForm) {
-                if (backdateEntryForm.$valid) {
-                    /*get all the user ids*/
-                    var userIds = [];
-                    if ($scope.backdateEntry != undefined) {
-                        angular.forEach($scope.backdateEntry.users, function(value, key) {
-                            userIds.push(value.id);
-                        });
-                    }
-
-                    /*create the post data*/
-                    var entryData = {
-                        date: $scope.backdateEntry.backdate,
-                        users: userIds,
-                        comment: $scope.backdateEntry.reason
-                    };
-
-                    timeEntry.saveBackDateEntry(entryData).success(function(response) {
-                        console.log('backdate entries', response);
-                        $scope.allEntries = response;
-                        $scope.backdateEntry = {};
-                        $scope.showEntries = true;
-                        snackbar.create("Entry added and mail sent.", 1000);
-                    });
-                }
-            }
-        });
-    }
-]);
-
-/**
- * Created by amitav on 12/13/15.
- */
-myApp.factory('commentFactory', ['$http', function($http) {
-    var commentFactory = {};
-
-    commentFactory.getProjectComments = function(projectId) {
-        console.log('Project id', projectId);
-        return $http.get(baseUrl + 'api/get-project-comments/' + projectId);
+    clientFactory.getClientList = function() {
+        return $http.get(baseUrl + 'api/get-client-list');
     }
 
-    commentFactory.saveComment = function (commentData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/save-project-comment',
-            method: 'POST',
-            data: commentData
-        });
-    }
-
-    return commentFactory;
+    return clientFactory;
 }]);
 
 myApp.factory('estimateFactory', ['$http', function($http) {
@@ -636,16 +559,6 @@ myApp.factory('timeEntry', ['$http', function($http) {
     return timeEntry;
 }]);
 
-myApp.factory('clientFactory', ['$http', function($http) {
-    var clientFactory = {};
-
-    clientFactory.getClientList = function() {
-        return $http.get(baseUrl + 'api/get-client-list');
-    }
-
-    return clientFactory;
-}]);
-
 myApp.factory('userFactory', ['$http', function($http) {
     var userFactory = {};
 
@@ -655,5 +568,92 @@ myApp.factory('userFactory', ['$http', function($http) {
 
     return userFactory;
 }]);
+
+/**
+ * Created by amitav on 12/13/15.
+ */
+myApp.factory('commentFactory', ['$http', function($http) {
+    var commentFactory = {};
+
+    commentFactory.getProjectComments = function(projectId) {
+        console.log('Project id', projectId);
+        return $http.get(baseUrl + 'api/get-project-comments/' + projectId);
+    }
+
+    commentFactory.saveComment = function (commentData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/save-project-comment',
+            method: 'POST',
+            data: commentData
+        });
+    }
+
+    return commentFactory;
+}]);
+
+myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar',
+    function($scope, action, timeEntry, snackbar) {
+
+        /*check if users are loaded*/
+        if (action && action.users != undefined) {
+            action.users.success(function(response) {
+                console.log('all users', response);
+                $scope.users = response;
+            });
+        }
+
+        if (action && action.allEntries != undefined) {
+            window.document.title = 'Backdate entry';
+
+            action.allEntries.success(function(response) {
+                if (response.length != 0) {
+                    console.log('all Entries', response.length);
+                    $scope.allEntries = response;
+                    $scope.showEntries = true;
+                }
+            });
+        }
+
+        /*Variables*/
+        angular.extend($scope, {
+            backdateEntry: {},
+            allEntries: {},
+            showEntries: false
+        });
+
+        /*Methods*/
+        angular.extend($scope, {
+            backdateEntrySubmit: function(backdateEntryForm) {
+                if (backdateEntryForm.$valid) {
+                    /*get all the user ids*/
+                    var userIds = [];
+                    if ($scope.backdateEntry != undefined) {
+                        angular.forEach($scope.backdateEntry.users, function(value, key) {
+                            userIds.push(value.id);
+                        });
+                    }
+
+                    /*create the post data*/
+                    var entryData = {
+                        date: $scope.backdateEntry.backdate,
+                        users: userIds,
+                        comment: $scope.backdateEntry.reason
+                    };
+
+                    timeEntry.saveBackDateEntry(entryData).success(function(response) {
+                        console.log('backdate entries', response);
+                        $scope.allEntries = response;
+                        $scope.backdateEntry = {};
+                        $scope.showEntries = true;
+                        snackbar.create("Entry added and mail sent.", 1000);
+                    });
+                }
+            }
+        });
+    }
+]);
 
 //# sourceMappingURL=app.js.map
