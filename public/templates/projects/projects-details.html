@@ -11,8 +11,26 @@
 
     <div class="row">
         <div class="col-sm-12 jumbotron">
-            <p>Started: {{singleProject.created_at }}</p>
-            <p>Status: {{singleProject.status }}</p>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td align="center"><strong>Started</strong></td>
+                        <td align="center"><strong>Status</strong></td>
+                        <td align="center"><strong>Hours allocated</strong></td>
+                        <td align="center"><strong>Hours consumed</strong></td>
+                        <td align="center"><strong>Consumed %</strong></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="center">{{singleProject.created_at }}</td>
+                        <td align="center">{{singleProject.status }}</td>
+                        <td align="center">{{singleProject.hours_allocated}}</td>
+                        <td align="center">{{singleProject.hours_consumed}}</td>
+                        <td align="center">{{singleProject.percent_complete}}</td>
+                    </tr>
+                </tbody>
+            </table>
             <a href="#/projects" class="btn btn-primary">Back</a>
             <button class="btn btn-warning" ng-click="deleteProject()">Delete</button>
         </div>
@@ -22,6 +40,7 @@
 
     <div class="row">
         <div class="col-sm-12">
+            <!-- <pre>{{singleProject | json}}</pre> -->
             <table class="table table-bordered table-hover table-striped">
                 <thead>
                     <tr class="success">

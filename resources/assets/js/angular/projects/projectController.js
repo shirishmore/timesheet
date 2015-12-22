@@ -33,12 +33,23 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
             projectFactory.getProjectById($routeParams.id).success(function(response) {
                 console.log('Single project', response);
                 $scope.singleProject = response;
+                $scope.singleProject.hours_allocated = 0;
+                $scope.singleProject.hours_consumed = 0;
+
+                angular.forEach(response.estimates, function(estimate, key) {
+                    $scope.singleProject.hours_allocated += estimate.hours_allocated;
+                    $scope.singleProject.hours_consumed += estimate.hours_consumed;
+                });
+
+                $scope.singleProject.percent_complete = $scope.singleProject.hours_consumed / $scope.singleProject.hours_allocated * 100;
+                $scope.singleProject.percent_complete = parseFloat($scope.singleProject.percent_complete).toFixed(2);
+
                 $scope.showSingleProject = true;
             });
         }
 
+        /*When looking at an individual estimate*/
         if ($routeParams.estimateId) {
-
             /*Get the estimate details by id*/
             estimateFactory.getEstimateById($routeParams.estimateId).success(function(response) {
                 console.log('Need to load estimate', response);
@@ -53,6 +64,12 @@ myApp.controller('projectController', ['$scope', 'projectFactory', '$routeParams
                     /*Get time entries for the estimate*/
                     timeEntry.getEntriesForEstimate($scope.singleEstimate.id).success(function(response) {
                         $scope.estimateTimes = response;
+                        $scope.estimateTimes.total = 0;
+                        angular.forEach(response, function(estimate, key) {
+                            $scope.estimateTimes.total += estimate.time;
+                        });
+
+                        $scope.estimateTimes.total = parseFloat($scope.estimateTimes.total).toPrecision(2);
                         console.log('Time entries', response);
                     });
                 });

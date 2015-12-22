@@ -1,5 +1,6 @@
 var myApp = angular.module('myApp', [
     'ngRoute',
+    'ngCookies',
     'oi.select',
     '720kb.datepicker',
     'chart.js',
@@ -7,6 +8,15 @@ var myApp = angular.module('myApp', [
     'angular-loading-bar',
     'textAngular'
 ]);
+
+myApp.run(['userFactory', '$cookies', function(userFactory, $cookies) {
+    if ($cookies.get('userObj') === undefined) {
+        userFactory.getUserObj().success(function(response) {
+            console.log('created user object', response);
+            $cookies.putObject('userObj', response);
+        });
+    }
+}]);
 
 myApp.filter('unsafe', function($sce) {
     return $sce.trustAsHtml;
@@ -35,6 +45,11 @@ myApp.config(['$routeProvider', '$locationProvider',
         $routeProvider.when('/', {
             templateUrl: '/templates/manager/managerReports.html',
             controller: 'dashboardController'
+        });
+
+        $routeProvider.when('/logout', {
+            templateUrl: '/templates/users/user-logout.html',
+            controller: 'userController'
         });
 
         $routeProvider.when('/report', {
@@ -121,6 +136,7 @@ myApp.config(['$routeProvider', '$locationProvider',
                 }
             }
         });
+
         $routeProvider.when('/manage/view-back-date-entry/:backdateentryId', {
             templateUrl: '/templates/admin/view-backdateentry.html',
             controller: 'adminController',
@@ -130,6 +146,29 @@ myApp.config(['$routeProvider', '$locationProvider',
                         users: userFactory.getUserList(),
                         allEntries: timeEntry.getBackDateEntries()
                     };
+                }
+            }
+        });
+
+        $routeProvider.when('/manage/view-back-date-entry/:backdateentryId', {
+            templateUrl: '/templates/admin/view-backdateentry.html',
+            controller: 'adminController',
+            resolve: {
+                action: function(userFactory, timeEntry) {
+                    return {
+                        users: userFactory.getUserList(),
+                        allEntries: timeEntry.getBackDateEntries()
+                    };
+                }
+            }
+        });
+
+        $routeProvider.when('/user/request-backdate-entry', {
+            templateUrl: '/templates/users/request-backdate.html',
+            controller: 'userController',
+            resolve: {
+                action: function() {
+                    return 'single';
                 }
             }
         });

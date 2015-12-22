@@ -13,6 +13,7 @@
         <div class="col-sm-12 jumbotron">
             <p>Started: {{singleProject.created_at }}</p>
             <p>Status: {{singleProject.status }}</p>
+            <p>Total: {{estimateTimes.total}}</p>
             <a href="#/projects/{{ singleProject.id }}" class="btn btn-primary">Back</a>
         </div>
     </div>
@@ -40,6 +41,7 @@
             <select ng-model="singleEstimate.status" class="form-control">
                 <option value="Completed" {{ singleEstimate.status === 'Completed' ? 'selected' : '' }}>Completed</option>
                 <option value="In progress" {{ singleEstimate.status === 'In progress' ? 'selected' : '' }}>In progress</option>
+                <option value="Not Started" {{ singleEstimate.status === 'Not Started' ? 'selected' : '' }}>Not Started</option>
             </select>
         </div>
 
@@ -48,6 +50,7 @@
 </div>
 <div class="col-sm-8">
     <h4>Time entries</h4>
+    <!-- <pre>{{estimateTimes | json}}</pre> -->
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
