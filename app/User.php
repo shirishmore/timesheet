@@ -52,4 +52,20 @@ CanResetPasswordContract
     {
         return $this->hasMany('App\Comment');
     }
+
+    public function getUserListByRole($roleIds)
+    {
+        $roles = implode(",", $roleIds);
+        $select = [
+            'u.name as name',
+            'u.id as id',
+        ];
+        $query = DB::table('users as u');
+        $query->select($select);
+        $query->join('roles_users as ru', 'u.id', '=', 'ru.user_id');
+        $query->join('roles as r', 'r.id', '=', 'ru.role_id');
+        $query->whereRaw('ru.role_id IN ('.$roles.')');
+        $result = $query->get();
+        return $result;
+    }
 }

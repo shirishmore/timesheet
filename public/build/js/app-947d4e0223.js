@@ -169,7 +169,7 @@ myApp.config(['$routeProvider', '$locationProvider',
             resolve: {
                 action: function(userFactory, timeEntry) {
                     return {
-                        users: userFactory.getUserListByRole(1),
+                        users: userFactory.getUserListByRole(),
                         allEntries: timeEntry.getRequestBackDateEntries()
                     };
 
@@ -243,16 +243,6 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
     }
 ]);
 
-myApp.factory('clientFactory', ['$http', function($http) {
-    var clientFactory = {};
-
-    clientFactory.getClientList = function() {
-        return $http.get(baseUrl + 'api/get-client-list');
-    }
-
-    return clientFactory;
-}]);
-
 /**
  * Created by amitav on 12/13/15.
  */
@@ -276,6 +266,16 @@ myApp.factory('commentFactory', ['$http', function($http) {
     }
 
     return commentFactory;
+}]);
+
+myApp.factory('clientFactory', ['$http', function($http) {
+    var clientFactory = {};
+
+    clientFactory.getClientList = function() {
+        return $http.get(baseUrl + 'api/get-client-list');
+    }
+
+    return clientFactory;
 }]);
 
 myApp.factory('estimateFactory', ['$http', function($http) {
@@ -523,6 +523,69 @@ myApp.factory('projectFactory', ['$http', function($http) {
     return projectFactory;
 }]);
 
+myApp.factory('timeEntry', ['$http', function($http) {
+    var timeEntry = {};
+
+    timeEntry.getEntries = function() {
+        return $http.get(baseUrl + 'api/time-report');
+    }
+
+    /*timeEntry.getUserList = function() {
+        return $http.get(baseUrl + 'api/get-user-list');
+    }*/
+
+    timeEntry.getSearchResult = function(filterParams) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/time-report-filter',
+            method: 'POST',
+            data: filterParams
+        });
+    }
+
+    timeEntry.getTimeSheetEntryByDate = function() {
+        return $http.get(baseUrl + 'api/get-timeentry-by-date');
+    }
+
+    timeEntry.getEntriesForEstimate = function(estimateId) {
+        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
+    }
+
+    timeEntry.getBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-backdate-entries');
+    }
+
+    timeEntry.saveBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
+    timeEntry.getRequestBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-request-backdate-entries');
+    }
+
+    timeEntry.saveRequestBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-request-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
+    return timeEntry;
+}]);
+
 myApp.controller('dashboardController', ['$scope', 'timeEntry', '$parse',
     function($scope, timeEntry, $parse) {
         timeEntry.getTimeSheetEntryByDate().success(function(response) {
@@ -641,70 +704,7 @@ myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projec
     }
 ]);
 
-myApp.factory('timeEntry', ['$http', function($http) {
-    var timeEntry = {};
-
-    timeEntry.getEntries = function() {
-        return $http.get(baseUrl + 'api/time-report');
-    }
-
-    /*timeEntry.getUserList = function() {
-        return $http.get(baseUrl + 'api/get-user-list');
-    }*/
-
-    timeEntry.getSearchResult = function(filterParams) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/time-report-filter',
-            method: 'POST',
-            data: filterParams
-        });
-    }
-
-    timeEntry.getTimeSheetEntryByDate = function() {
-        return $http.get(baseUrl + 'api/get-timeentry-by-date');
-    }
-
-    timeEntry.getEntriesForEstimate = function(estimateId) {
-        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
-    }
-
-    timeEntry.getBackDateEntries = function() {
-        return $http.get(baseUrl + 'api/get-backdate-entries');
-    }
-
-    timeEntry.saveBackDateEntry = function(entryData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/allow-backdate-entry',
-            method: 'POST',
-            data: entryData
-        });
-    }
-
-    timeEntry.getRequestBackDateEntries = function() {
-        return $http.get(baseUrl + 'api/get-request-backdate-entries');
-    }
-
-    timeEntry.saveRequestBackDateEntry = function(entryData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/allow-request-backdate-entry',
-            method: 'POST',
-            data: entryData
-        });
-    }
-
-    return timeEntry;
-}]);
-
-myApp.controller('userController', ['$scope','action', 'timeEntry', '$location', 'userFactory', function($scope,  action, timeEntry,$location, userFactory) {
+myApp.controller('userController', ['$scope','action', 'timeEntry', '$location', 'userFactory','snackbar', function($scope,  action, timeEntry,$location, userFactory,snackbar) {
     if ($location.$$path == '/logout') {
         userFactory.logoutUser().success(function(response) {
             console.log('logout', response);
@@ -787,9 +787,19 @@ myApp.factory('userFactory', ['$http', '$cookies',
             return $http.get(baseUrl + 'api/get-user_data');
         }
 
-        userFactory.getUserListByRole = function(roleId) {
+        userFactory.getUserListByRole = function() {
             /*Code for loading users by role id*/
-            return $http.get(baseUrl + 'api/get-user-list-by-role/'+roleId)
+            var role = [1,3];
+            var jsonData=JSON.stringify(role);
+
+            return $http({
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                url: baseUrl + 'api/get-user-list-by-role',
+                method: 'POST',
+                data:  jsonData
+            });
         }
 
         return userFactory;

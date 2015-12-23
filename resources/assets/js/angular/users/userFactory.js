@@ -17,7 +17,17 @@ myApp.factory('userFactory', ['$http', '$cookies',
 
         userFactory.getUserListByRole = function() {
             /*Code for loading users by role id*/
-            return $http.get(baseUrl + 'api/get-user-list-by-role')
+            var role = [1,3];
+            var jsonData=JSON.stringify(role);
+
+            return $http({
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                url: baseUrl + 'api/get-user-list-by-role',
+                method: 'POST',
+                data:  jsonData
+            });
         }
 
         return userFactory;
