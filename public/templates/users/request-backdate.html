@@ -1,4 +1,4 @@
-<div ng-include="reportTabUrl" scope="" onload=""></div>
+<!--<div ng-include="reportTabUrl" scope="" onload=""></div>-->
 
 <div class="row">
     <div class="col-sm-12">
@@ -35,7 +35,7 @@
         <table class="table table-bordered table-striped table-hover">
             <thead>
             <tr>
-                <th>Name</th>
+                <th>Project Manager Name</th>
                 <th>Request Back date</th>
             </tr>
             </thead>
@@ -43,7 +43,7 @@
             <tbody>
             <tr ng-repeat="entry in allEntries">
                 <td>
-                    <a href="#/users/view-request-backdate/{{ entry.id }}">{{entry.name}}</a>
+                    <a href="#/user/view-request-backdate/{{ entry.id }}">{{entry.name}}</a>
                 </td>
                 <td>{{entry.backdate}}</td>
             </tr>

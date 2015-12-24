@@ -23,9 +23,25 @@ myApp.controller('userController', ['$scope','action', 'timeEntry', '$location',
                 $scope.showEntries = true;
             }
         });
+
     }
 
-    /*Variables*/
+    if (action && action.singleEntry != undefined) {
+
+            action.singleEntry.success(function(response) {
+                if (response.length != 0) {
+                    console.log('Single Entry ', response.length);
+                    $scope.singleEntry = response;
+                }
+            });
+    }
+
+
+
+
+
+
+        /*Variables*/
     angular.extend($scope, {
         requestBackdate: {},
         allEntries: {},

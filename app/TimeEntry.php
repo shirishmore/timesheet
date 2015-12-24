@@ -147,9 +147,10 @@ class TimeEntry extends Model
 
     public function getLatestRequestBackdateTimeEntries()
     {
-        return DB::table('backdate_requests as br')
-            ->join('users as u', 'u.id', '=', 'br.user_id')
+        $query = DB::table('backdate_requests as br')
+            ->join('users as u', 'u.id', '=', 'br.project_manager_id','left')
             ->orderBy('br.id', 'desc')
             ->get();
+        return $query;
     }
 }

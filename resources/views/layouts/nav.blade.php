@@ -24,7 +24,7 @@
           <ul class="dropdown-menu">
             <li><a href="{{ url('time-tracker') }}">My Entries</a></li>
             <li><a href="{{ url('time-tracker-add') }}">Add Entry</a></li>
-            <li><a href="{{ url('/') }}">Request backdate entry</a></li>
+            <li><a href="{{ url('spa/time-tracker-report#/user/request-backdate-entry') }}"><i class="fa fa-backward"></i> Request backdate entry</a></li>
             @if (Gate::allows('viewTrackerReport', new \App\TimeEntry))
             <li role="separator" class="divider"></li>
             <li><a href="{{ url('spa/time-tracker-report#/manage/back-date-entry') }}"><i class="fa fa-backward"></i> Backdate Entry</a></li>

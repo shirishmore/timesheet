@@ -47,6 +47,10 @@ myApp.factory('timeEntry', ['$http', function($http) {
         return $http.get(baseUrl + 'api/get-request-backdate-entries');
     }
 
+    timeEntry.getRequestBackDateEntriesById = function(id) {
+        return $http.get(baseUrl + 'api/get-request-backdate-entries-by-id/' + id);
+    }
+
     timeEntry.saveRequestBackDateEntry = function(entryData) {
         return $http({
             headers: {

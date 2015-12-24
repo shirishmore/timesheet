@@ -1,7 +1,28 @@
-<div ng-include="reportTabUrl" scope="" onload=""></div>
 
 <div class="row">
     <div class="col-sm-12">
         <h3>Request Backdate entry</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 jumbotron">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td align="center"><strong>Project Manager</strong></td>
+                <td align="center"><strong>Back Date Requested</strong></td>
+                <td align="center"><strong>Status</strong></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td align="center">{{singleEntry.pm }}</td>
+                <td align="center">{{singleEntry.backdate }}</td>
+                <td align="center">{{singleEntry.status}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="#/projects" class="btn btn-primary">Back</a>
+        <button class="btn btn-warning" ng-click="deleteBackDateRequest()">Delete</button>
     </div>
 </div>

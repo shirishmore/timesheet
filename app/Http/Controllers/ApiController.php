@@ -315,6 +315,12 @@ class ApiController extends Controller
         return response($request_backdate_entries, 200);
     }
 
+    public function getRequestBackDateEntryById($id)
+    {
+        //return Project::with('backdate_requests')->with('users')->orderBy('name')->get();
+        return DB::table('backdate_requests')->where('id','=',$id)->get();
+    }
+
     public function allowBackdateEntry(Request $request, SendMailInterface $mail)
     {
         // return $request->all();
