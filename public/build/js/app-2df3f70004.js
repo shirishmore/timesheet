@@ -167,8 +167,12 @@ myApp.config(['$routeProvider', '$locationProvider',
             templateUrl: '/templates/users/request-backdate.html',
             controller: 'userController',
             resolve: {
-                action: function() {
-                    return 'single';
+                action: function(userFactory, timeEntry) {
+                    return {
+                        users: userFactory.getUserListByRole(1),
+                        allEntries: timeEntry.getRequestBackDateEntries()
+                    };
+
                 }
             }
         });
@@ -239,123 +243,15 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
     }
 ]);
 
-myApp.controller('dashboardController', ['$scope', 'timeEntry', '$parse',
-    function($scope, timeEntry, $parse) {
-        timeEntry.getTimeSheetEntryByDate().success(function(response) {
-            $scope.timeEntryOverview = response;
-        });
+myApp.factory('clientFactory', ['$http', function($http) {
+    var clientFactory = {};
 
-        angular.extend($scope, {
-            graphLabels: {}
-        });
-
-        angular.extend($scope, {
-            changeTag: function(url) {
-                $scope.tabUrl = url;
-            }
-        });
-
-        $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-        $scope.data = [300, 500, 100];
+    clientFactory.getClientList = function() {
+        return $http.get(baseUrl + 'api/get-client-list');
     }
-]);
 
-myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projectFactory', 'userFactory',
-    function($scope, timeEntry, $timeout, projectFactory, userFactory) {
-
-        timeEntry.getEntries().then(function(response) {
-                console.log('time entries', response.data);
-                $scope.timeEntries = response.data;
-                angular.forEach(response.data, function(value, key) {
-                    $scope.totalTime = $scope.totalTime + value.time;
-                });
-                return response;
-            })
-            .then(function() {
-                userFactory.getUserList().then(function(response) {
-                    console.log('user list', response.data);
-                    angular.forEach(response.data, function(value, key) {
-                        $scope.users.push(value);
-                    });
-                });
-            })
-            .then(function() {
-                projectFactory.getProjectList().then(function(response) {
-                    console.log('project list', response.data);
-                    angular.forEach(response.data, function(value, key) {
-                        $scope.projects.push(value);
-                    });
-
-                    $timeout(function() {
-                        $scope.showData = true;
-                    }, 500);
-                });
-            });
-
-        angular.extend($scope, {
-            totalTime: 0,
-            showData: false,
-            filters: {},
-            users: [],
-            projects: [],
-            dt: new Date()
-        });
-
-        angular.extend($scope, {
-            filterTime: function(filterTimeFrm) {
-                console.log($scope.filters);
-                var queryParams = {};
-
-                if ($scope.filters.desc != "") {
-                    queryParams.desc = $scope.filters.desc;
-                }
-
-                if ($scope.filters.users !== undefined && $scope.filters.users.length > 0) {
-                    queryParams.users = [];
-                    angular.forEach($scope.filters.users, function(value, key) {
-                        queryParams.users.push(value.id);
-                    });
-                }
-
-                if ($scope.filters.project !== undefined && $scope.filters.project.length > 0) {
-                    queryParams.projects = [];
-                    angular.forEach($scope.filters.project, function(value, key) {
-                        queryParams.projects.push(value.id);
-                    });
-                }
-
-                if ($scope.filters.startDate !== undefined) {
-                    queryParams.startDate = $scope.filters.startDate;
-                }
-
-                if ($scope.filters.endDate !== undefined) {
-                    queryParams.endDate = $scope.filters.endDate;
-                    var startDateOfYear = moment(queryParams.startDate).dayOfYear();
-                    var endDateOfYear = moment(queryParams.endDate).dayOfYear();
-
-                    console.log(startDateOfYear, endDateOfYear);
-
-                    if ($scope.filters.startDate !== undefined && endDateOfYear < startDateOfYear) {
-                        alert('End date is before start date.');
-                        return false;
-                    }
-                }
-
-                timeEntry.getSearchResult(queryParams).then(function(response) {
-                    console.log('search result', response.data);
-                    $scope.timeEntries = response.data;
-                    $scope.totalTime = 0;
-                    angular.forEach(response.data, function(value, key) {
-                        $scope.totalTime = $scope.totalTime + value.time;
-                    });
-                });
-            },
-            clearFilters: function() {
-                $scope.filters = {};
-            }
-        });
-    }
-]);
+    return clientFactory;
+}]);
 
 /**
  * Created by amitav on 12/13/15.
@@ -380,16 +276,6 @@ myApp.factory('commentFactory', ['$http', function($http) {
     }
 
     return commentFactory;
-}]);
-
-myApp.factory('clientFactory', ['$http', function($http) {
-    var clientFactory = {};
-
-    clientFactory.getClientList = function() {
-        return $http.get(baseUrl + 'api/get-client-list');
-    }
-
-    return clientFactory;
 }]);
 
 myApp.factory('estimateFactory', ['$http', function($http) {
@@ -637,6 +523,124 @@ myApp.factory('projectFactory', ['$http', function($http) {
     return projectFactory;
 }]);
 
+myApp.controller('dashboardController', ['$scope', 'timeEntry', '$parse',
+    function($scope, timeEntry, $parse) {
+        timeEntry.getTimeSheetEntryByDate().success(function(response) {
+            $scope.timeEntryOverview = response;
+        });
+
+        angular.extend($scope, {
+            graphLabels: {}
+        });
+
+        angular.extend($scope, {
+            changeTag: function(url) {
+                $scope.tabUrl = url;
+            }
+        });
+
+        $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
+        $scope.data = [300, 500, 100];
+    }
+]);
+
+myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projectFactory', 'userFactory',
+    function($scope, timeEntry, $timeout, projectFactory, userFactory) {
+
+        timeEntry.getEntries().then(function(response) {
+                console.log('time entries', response.data);
+                $scope.timeEntries = response.data;
+                angular.forEach(response.data, function(value, key) {
+                    $scope.totalTime = $scope.totalTime + value.time;
+                });
+                return response;
+            })
+            .then(function() {
+                userFactory.getUserList().then(function(response) {
+                    console.log('user list', response.data);
+                    angular.forEach(response.data, function(value, key) {
+                        $scope.users.push(value);
+                    });
+                });
+            })
+            .then(function() {
+                projectFactory.getProjectList().then(function(response) {
+                    console.log('project list', response.data);
+                    angular.forEach(response.data, function(value, key) {
+                        $scope.projects.push(value);
+                    });
+
+                    $timeout(function() {
+                        $scope.showData = true;
+                    }, 500);
+                });
+            });
+
+        angular.extend($scope, {
+            totalTime: 0,
+            showData: false,
+            filters: {},
+            users: [],
+            projects: [],
+            dt: new Date()
+        });
+
+        angular.extend($scope, {
+            filterTime: function(filterTimeFrm) {
+                console.log($scope.filters);
+                var queryParams = {};
+
+                if ($scope.filters.desc != "") {
+                    queryParams.desc = $scope.filters.desc;
+                }
+
+                if ($scope.filters.users !== undefined && $scope.filters.users.length > 0) {
+                    queryParams.users = [];
+                    angular.forEach($scope.filters.users, function(value, key) {
+                        queryParams.users.push(value.id);
+                    });
+                }
+
+                if ($scope.filters.project !== undefined && $scope.filters.project.length > 0) {
+                    queryParams.projects = [];
+                    angular.forEach($scope.filters.project, function(value, key) {
+                        queryParams.projects.push(value.id);
+                    });
+                }
+
+                if ($scope.filters.startDate !== undefined) {
+                    queryParams.startDate = $scope.filters.startDate;
+                }
+
+                if ($scope.filters.endDate !== undefined) {
+                    queryParams.endDate = $scope.filters.endDate;
+                    var startDateOfYear = moment(queryParams.startDate).dayOfYear();
+                    var endDateOfYear = moment(queryParams.endDate).dayOfYear();
+
+                    console.log(startDateOfYear, endDateOfYear);
+
+                    if ($scope.filters.startDate !== undefined && endDateOfYear < startDateOfYear) {
+                        alert('End date is before start date.');
+                        return false;
+                    }
+                }
+
+                timeEntry.getSearchResult(queryParams).then(function(response) {
+                    console.log('search result', response.data);
+                    $scope.timeEntries = response.data;
+                    $scope.totalTime = 0;
+                    angular.forEach(response.data, function(value, key) {
+                        $scope.totalTime = $scope.totalTime + value.time;
+                    });
+                });
+            },
+            clearFilters: function() {
+                $scope.filters = {};
+            }
+        });
+    }
+]);
+
 myApp.factory('timeEntry', ['$http', function($http) {
     var timeEntry = {};
 
@@ -682,16 +686,88 @@ myApp.factory('timeEntry', ['$http', function($http) {
         });
     }
 
+    timeEntry.getRequestBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-request-backdate-entries');
+    }
+
+    timeEntry.saveRequestBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-request-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
     return timeEntry;
 }]);
 
-myApp.controller('userController', ['$scope', '$location', 'userFactory', function($scope, $location, userFactory) {
+myApp.controller('userController', ['$scope','action', 'timeEntry', '$location', 'userFactory', function($scope,  action, timeEntry,$location, userFactory) {
     if ($location.$$path == '/logout') {
         userFactory.logoutUser().success(function(response) {
             console.log('logout', response);
             window.location = baseUrl;
         });
     }
+    /*check if users are loaded*/
+    if (action && action.users != undefined) {
+        action.users.success(function(response) {
+            console.log('all users', response);
+            $scope.users = response;
+        });
+    }
+
+    if (action && action.allEntries != undefined) {
+        window.document.title = 'Request Backdate entry';
+
+        action.allEntries.success(function(response) {
+            if (response.length != 0) {
+                console.log('all Entries', response.length);
+                $scope.allEntries = response;
+                $scope.showEntries = true;
+            }
+        });
+    }
+
+    /*Variables*/
+    angular.extend($scope, {
+        requestBackdate: {},
+        allEntries: {},
+        showEntries: false
+    });
+
+    /*Methods*/
+    angular.extend($scope, {
+        requestBackdateSubmit: function(requestBackdateForm) {
+            if (requestBackdateForm.$valid) {
+                /*get all the user ids*/
+                var userIds = [];
+                if ($scope.requestBackdate != undefined) {
+                    angular.forEach($scope.requestBackdate.users, function(value, key) {
+                        userIds.push(value.id);
+                    });
+                }
+
+                /*create the post data*/
+                var entryData = {
+                    date: $scope.requestBackdate.backdate,
+                    users: userIds,
+                    comment: $scope.requestBackdate.reason
+                };
+
+                timeEntry.saveRequestBackDateEntry(entryData).success(function(response) {
+                    console.log('backdate entries', response);
+                    $scope.allEntries = response;
+                    $scope.requestBackdate = {};
+                    $scope.showEntries = true;
+                    snackbar.create("Entry added and mail sent.", 1000);
+                });
+            }
+        }
+    });
+    
 }]);
 
 myApp.factory('userFactory', ['$http', '$cookies',
@@ -713,6 +789,7 @@ myApp.factory('userFactory', ['$http', '$cookies',
 
         userFactory.getUserListByRole = function(roleId) {
             /*Code for loading users by role id*/
+            return $http.get(baseUrl + 'api/get-user-list-by-role/'+roleId)
         }
 
         return userFactory;

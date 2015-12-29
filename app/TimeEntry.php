@@ -39,6 +39,7 @@ class TimeEntry extends Model
     public function getManagerTrackerReport()
     {
         $select = [
+            'te.created_at as created_at',
             'te.desc as description',
             'te.time as time',
             'u.name as username',
@@ -142,6 +143,14 @@ class TimeEntry extends Model
         return DB::table('backdate_timeentry as bt')
             ->join('users as u', 'u.id', '=', 'bt.user_id')
             ->orderBy('bt.id', 'desc')
+            ->get();
+    }
+
+    public function getLatestRequestBackdateTimeEntries()
+    {
+        return DB::table('backdate_requests as br')
+            ->join('users as u', 'u.id', '=', 'br.user_id')
+            ->orderBy('br.id', 'desc')
             ->get();
     }
 }

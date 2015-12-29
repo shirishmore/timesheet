@@ -313,10 +313,23 @@ class PieGraph
             ImageString($final, 1, ($this->pie_width+$cellpadding), ($this->img_height-ImageFontHeight(1)), $time_text, $colTEXT);
         }
         header('Content-type: image/png');
-        imagepng($final);
+        $dir = public_path().'/report_images/';
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        imagepng($final,$dir.date('y_m_d_his').'.png');
+        echo 'Please check your public folder for report images';
         ImageDestroy($this->pie);
         ImageDestroy($leg_img);
         ImageDestroy($final);
+    }
+
+    function random_color_part() {
+        return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
+    }
+
+    function random_color() {
+        return $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
     }
 }
 
