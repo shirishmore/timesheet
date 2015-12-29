@@ -42,7 +42,7 @@ class ManagerController extends Controller
             $data = [];
             foreach ($timeEntries as $entry) {
                 $data[] = [
-                    'date' => Carbon::createFromFormat('Y-m-d H:m:s', $entry->created_at)->toDateString(),
+                    'date' => Carbon::parse($entry->created_at)->toDateString(),
                     'description' => $entry->description,
                     'time' => $entry->time,
                     'username' => $entry->username,
