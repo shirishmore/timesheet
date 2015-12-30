@@ -346,9 +346,9 @@ class ApiController extends Controller
 
         return response('Requested Backdate deleted', 200);
     }
+<<<<<<< .mine
 
-
-    public function allowBackdateEntry(Request $request, SendMailInterface $mail)
+=======>>>>>>> .theirs    public function allowBackdateEntry(Request $request, SendMailInterface $mail)
     {
         // return $request->all();
         $date = Carbon::parse($request->input('date'));
@@ -483,4 +483,5 @@ class ApiController extends Controller
 
         return response($request_backdate_entries, 200);
     }
+
 }

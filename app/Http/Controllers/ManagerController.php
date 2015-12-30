@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\PieGraph;
 use App\TimeEntry;
 use App\User;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ManagerController extends Controller
@@ -22,7 +23,7 @@ class ManagerController extends Controller
             }
         }
 
-        if ($flag != true) {
+        if (true != $flag) {
             abort(403, 'Now allowed');
         }
     }
@@ -41,6 +42,7 @@ class ManagerController extends Controller
             $data = [];
             foreach ($timeEntries as $entry) {
                 $data[] = [
+                    'date' => Carbon::parse($entry->created_at)->toDateString(),
                     'description' => $entry->description,
                     'time' => $entry->time,
                     'username' => $entry->username,
@@ -99,24 +101,23 @@ class ManagerController extends Controller
                     'Total Time' => $entry->totalTime,
                     'Team' => $entry->team,
                 ];
-            }//echo "ss<pre>";print_r(count($data));die;
+            } //echo "ss<pre>";print_r(count($data));die;
 
             $excel->sheet('Sheet 1', function ($sheet) use ($data) {
                 $last_row = count($data) + 1;
                 $sheet->fromArray($data);
                 foreach ($data as $k => $v) {
                     $row_num = $k + 2;
-                    if(empty($v['Time']))
-                    {
-                        $sheet->row($row_num, function($row) {
-                                // call cell manipulation methods
-                                $row->setBackground('#FFFF00');
+                    if (empty($v['Time'])) {
+                        $sheet->row($row_num, function ($row) {
+                            // call cell manipulation methods
+                            $row->setBackground('#FFFF00');
                         });
-                        $sheet->row($row_num, array($v['Date'],$v['Project Name'].' Total',$v['Client Name'],$v['Time'],$v['Total Time'],$v['Team']));
+                        $sheet->row($row_num, array($v['Date'], $v['Project Name'] . ' Total', $v['Client Name'], $v['Time'], $v['Total Time'], $v['Team']));
                     }
-                    $sheet->row($last_row, array('','Total','','',$v['Total Time'],''));
+                    $sheet->row($last_row, array('', 'Total', '', '', $v['Total Time'], ''));
                     //Last row: total of all projects
-                    $sheet->row($last_row, function($row) {
+                    $sheet->row($last_row, function ($row) {
                         // call cell manipulation methods
                         $row->setBackground('#0000FF');
                     });

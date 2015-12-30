@@ -39,6 +39,7 @@ class TimeEntry extends Model
     public function getManagerTrackerReport()
     {
         $select = [
+            'te.created_at as created_at',
             'te.desc as description',
             'te.time as time',
             'u.name as username',
@@ -136,5 +137,6 @@ class TimeEntry extends Model
 
         return $query;
     }
+
 
 }
