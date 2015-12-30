@@ -1,4 +1,4 @@
-myApp.controller('userController', ['$scope','action', 'timeEntry', '$location', 'userFactory','snackbar', function($scope,  action, timeEntry,$location, userFactory,snackbar) {
+myApp.controller('userController', ['$scope','action', 'timeEntry', '$routeParams','$location', 'userFactory','snackbar', function($scope,  action, timeEntry,$routeParams,$location, userFactory,snackbar) {
     if ($location.$$path == '/logout') {
         userFactory.logoutUser().success(function(response) {
             console.log('logout', response);
@@ -26,25 +26,22 @@ myApp.controller('userController', ['$scope','action', 'timeEntry', '$location',
 
     }
 
-    if (action && action.singleEntry != undefined) {
+    if (action && action.singleRequestBackdateEntry != undefined) {
 
-            action.singleEntry.success(function(response) {
+            action.singleRequestBackdateEntry.success(function(response) {
                 if (response.length != 0) {
-                    console.log('Single Entry ', response.length);
-                    $scope.singleEntry = response;
+                    console.log('Single Request Backdate Entry ', response.length);
+                    $scope.singleRequestBackdateEntry = response;
                 }
             });
     }
-
-
-
-
 
 
         /*Variables*/
     angular.extend($scope, {
         requestBackdate: {},
         allEntries: {},
+        singleRequestBackdateEntry: {},
         showEntries: false
     });
 
@@ -75,7 +72,17 @@ myApp.controller('userController', ['$scope','action', 'timeEntry', '$location',
                     snackbar.create("Entry added and mail sent.", 1000);
                 });
             }
+        },
+        deleteBackDateRequest: function() {
+            var r = confirm("This will delete the backdate request entry. Ok?");
+            if (r === true) {
+                timeEntry.deleteBackDateRequest($routeParams.id).success(function(response) {
+                    $location.path('/user/request-backdate-entry');
+                    snackbar.create("Requested backdate deleted", 1000);
+                });
+            }
         }
+
     });
     
 }]);

@@ -141,27 +141,14 @@ myApp.config(['$routeProvider', '$locationProvider',
             templateUrl: '/templates/admin/view-backdateentry.html',
             controller: 'adminController',
             resolve: {
-                action: function(userFactory, timeEntry) {
+                action: function(userFactory, timeEntry,$route) {
                     return {
-                        users: userFactory.getUserList(),
-                        allEntries: timeEntry.getBackDateEntries()
+                        singleBackDateEntry: timeEntry.getBackDateEntriesById($route.current.params.backdateentryId)
                     };
                 }
             }
         });
 
-        $routeProvider.when('/manage/view-back-date-entry/:backdateentryId', {
-            templateUrl: '/templates/admin/view-backdateentry.html',
-            controller: 'adminController',
-            resolve: {
-                action: function(userFactory, timeEntry) {
-                    return {
-                        users: userFactory.getUserList(),
-                        allEntries: timeEntry.getBackDateEntries()
-                    };
-                }
-            }
-        });
 
         $routeProvider.when('/user/request-backdate-entry', {
             templateUrl: '/templates/users/request-backdate.html',
@@ -183,7 +170,7 @@ myApp.config(['$routeProvider', '$locationProvider',
             resolve: {
                 action: function(userFactory, timeEntry,$route) {
                     return {
-                        singleEntry: timeEntry.getRequestBackDateEntriesById($route.current.params.backdateentryId)
+                        singleRequestBackdateEntry: timeEntry.getRequestBackDateEntriesById($route.current.params.backdateentryId)
 
                     };
                 }
@@ -193,8 +180,8 @@ myApp.config(['$routeProvider', '$locationProvider',
     }
 ]);
 
-myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar',
-    function($scope, action, timeEntry, snackbar) {
+myApp.controller('adminController', ['$scope', 'action', 'timeEntry','$routeParams', '$location', 'snackbar',
+    function($scope, action, timeEntry,$routeParams ,$location, snackbar) {
 
         /*check if users are loaded*/
         if (action && action.users != undefined) {
@@ -216,10 +203,21 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
             });
         }
 
+        if (action && action.singleBackdateEntry != undefined) {
+
+            action.singleBackdateEntry.success(function(response) {
+                if (response.length != 0) {
+                    console.log('Single Backdate Entry ', response.length);
+                    $scope.singleBackdateEntry = response;
+                }
+            });
+        }
+
         /*Variables*/
         angular.extend($scope, {
             backdateEntry: {},
             allEntries: {},
+            singleBackdateEntry: {},
             showEntries: false
         });
 
@@ -248,6 +246,15 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
                         $scope.backdateEntry = {};
                         $scope.showEntries = true;
                         snackbar.create("Entry added and mail sent.", 1000);
+                    });
+                }
+            },
+            deleteBackDate: function() {
+                var r = confirm("This will delete the backdate entry . Ok?");
+                if (r === true) {
+                    timeFactory.deleteBackDate($routeParams.id).success(function(response) {
+                        $location.path('/manage/back-date-entry');
+                        snackbar.create("Backdate deleted", 1000);
                     });
                 }
             }
@@ -653,74 +660,7 @@ myApp.controller('reportController', ['$scope', 'timeEntry', '$timeout', 'projec
     }
 ]);
 
-myApp.factory('timeEntry', ['$http', function($http) {
-    var timeEntry = {};
-
-    timeEntry.getEntries = function() {
-        return $http.get(baseUrl + 'api/time-report');
-    }
-
-    /*timeEntry.getUserList = function() {
-        return $http.get(baseUrl + 'api/get-user-list');
-    }*/
-
-    timeEntry.getSearchResult = function(filterParams) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/time-report-filter',
-            method: 'POST',
-            data: filterParams
-        });
-    }
-
-    timeEntry.getTimeSheetEntryByDate = function() {
-        return $http.get(baseUrl + 'api/get-timeentry-by-date');
-    }
-
-    timeEntry.getEntriesForEstimate = function(estimateId) {
-        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
-    }
-
-    timeEntry.getBackDateEntries = function() {
-        return $http.get(baseUrl + 'api/get-backdate-entries');
-    }
-
-    timeEntry.saveBackDateEntry = function(entryData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/allow-backdate-entry',
-            method: 'POST',
-            data: entryData
-        });
-    }
-
-    timeEntry.getRequestBackDateEntries = function() {
-        return $http.get(baseUrl + 'api/get-request-backdate-entries');
-    }
-
-    timeEntry.getRequestBackDateEntriesById = function(id) {
-        return $http.get(baseUrl + 'api/get-request-backdate-entries-by-id/' + id);
-    }
-
-    timeEntry.saveRequestBackDateEntry = function(entryData) {
-        return $http({
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            url: baseUrl + 'api/allow-request-backdate-entry',
-            method: 'POST',
-            data: entryData
-        });
-    }
-
-    return timeEntry;
-}]);
-
-myApp.controller('userController', ['$scope','action', 'timeEntry', '$location', 'userFactory','snackbar', function($scope,  action, timeEntry,$location, userFactory,snackbar) {
+myApp.controller('userController', ['$scope','action', 'timeEntry', '$routeParams','$location', 'userFactory','snackbar', function($scope,  action, timeEntry,$routeParams,$location, userFactory,snackbar) {
     if ($location.$$path == '/logout') {
         userFactory.logoutUser().success(function(response) {
             console.log('logout', response);
@@ -748,25 +688,22 @@ myApp.controller('userController', ['$scope','action', 'timeEntry', '$location',
 
     }
 
-    if (action && action.singleEntry != undefined) {
+    if (action && action.singleRequestBackdateEntry != undefined) {
 
-            action.singleEntry.success(function(response) {
+            action.singleRequestBackdateEntry.success(function(response) {
                 if (response.length != 0) {
-                    console.log('Single Entry ', response.length);
-                    $scope.singleEntry = response;
+                    console.log('Single Request Backdate Entry ', response.length);
+                    $scope.singleRequestBackdateEntry = response;
                 }
             });
     }
-
-
-
-
 
 
         /*Variables*/
     angular.extend($scope, {
         requestBackdate: {},
         allEntries: {},
+        singleRequestBackdateEntry: {},
         showEntries: false
     });
 
@@ -797,7 +734,17 @@ myApp.controller('userController', ['$scope','action', 'timeEntry', '$location',
                     snackbar.create("Entry added and mail sent.", 1000);
                 });
             }
+        },
+        deleteBackDateRequest: function() {
+            var r = confirm("This will delete the backdate request entry. Ok?");
+            if (r === true) {
+                timeEntry.deleteBackDateRequest($routeParams.id).success(function(response) {
+                    $location.path('/user/request-backdate-entry');
+                    snackbar.create("Requested backdate deleted", 1000);
+                });
+            }
         }
+
     });
     
 }]);
@@ -837,5 +784,101 @@ myApp.factory('userFactory', ['$http', '$cookies',
         return userFactory;
     }
 ]);
+
+myApp.factory('timeEntry', ['$http', function($http) {
+    var timeEntry = {};
+
+    timeEntry.getEntries = function() {
+        return $http.get(baseUrl + 'api/time-report');
+    }
+
+    /*timeEntry.getUserList = function() {
+        return $http.get(baseUrl + 'api/get-user-list');
+    }*/
+
+    timeEntry.getSearchResult = function(filterParams) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/time-report-filter',
+            method: 'POST',
+            data: filterParams
+        });
+    }
+
+    timeEntry.getTimeSheetEntryByDate = function() {
+        return $http.get(baseUrl + 'api/get-timeentry-by-date');
+    }
+
+    timeEntry.getEntriesForEstimate = function(estimateId) {
+        return $http.get(baseUrl + 'api/get-timeentry-for-estimate/' + estimateId);
+    }
+
+    timeEntry.getBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-backdate-entries');
+    }
+
+    timeEntry.getBackDateEntriesById = function(id) {
+        return $http.get(baseUrl + 'api/get-backdate-entry/' + id);
+    }
+
+    timeEntry.saveBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+
+    timeEntry.getRequestBackDateEntries = function() {
+        return $http.get(baseUrl + 'api/get-request-backdate-entries');
+    }
+
+    timeEntry.getRequestBackDateEntriesById = function(id) {
+        return $http.get(baseUrl + 'api/get-request-backdate-entries-by-id/' + id);
+    }
+
+    timeEntry.saveRequestBackDateEntry = function(entryData) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/allow-request-backdate-entry',
+            method: 'POST',
+            data: entryData
+        });
+    }
+    timeEntry.deleteBackDate = function(id) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/delete-backdate',
+            method: 'POST',
+            data: {
+                id: id
+            }
+        });
+    }
+
+    timeEntry.deleteBackDateRequest = function(id) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/delete-request-backdate',
+            method: 'POST',
+            data: {
+                id: id
+            }
+        });
+    }
+
+    return timeEntry;
+}]);
 
 //# sourceMappingURL=app.js.map

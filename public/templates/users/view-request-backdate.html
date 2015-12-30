@@ -16,13 +16,13 @@
             </thead>
             <tbody>
             <tr>
-                <td align="center">{{singleEntry.pm }}</td>
-                <td align="center">{{singleEntry.backdate }}</td>
-                <td align="center">{{singleEntry.status}}</td>
+                <td align="center">{{ singleRequestBackdateEntry[0].project_manager_id }}</td>
+                <td align="center">{{ singleRequestBackdateEntry[0].backdate }}</td>
+                <td align="center">{{ singleRequestBackdateEntry[0].status}}</td>
             </tr>
             </tbody>
         </table>
-        <a href="#/projects" class="btn btn-primary">Back</a>
+        <a href="#/user/request-backdate-entry" class="btn btn-primary">Back</a>
         <button class="btn btn-warning" ng-click="deleteBackDateRequest()">Delete</button>
     </div>
 </div>

@@ -1,5 +1,5 @@
-myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar',
-    function($scope, action, timeEntry, snackbar) {
+myApp.controller('adminController', ['$scope', 'action', 'timeEntry','$routeParams', '$location', 'snackbar',
+    function($scope, action, timeEntry,$routeParams ,$location, snackbar) {
 
         /*check if users are loaded*/
         if (action && action.users != undefined) {
@@ -21,10 +21,21 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
             });
         }
 
+        if (action && action.singleBackdateEntry != undefined) {
+
+            action.singleBackdateEntry.success(function(response) {
+                if (response.length != 0) {
+                    console.log('Single Backdate Entry ', response.length);
+                    $scope.singleBackdateEntry = response;
+                }
+            });
+        }
+
         /*Variables*/
         angular.extend($scope, {
             backdateEntry: {},
             allEntries: {},
+            singleBackdateEntry: {},
             showEntries: false
         });
 
@@ -53,6 +64,15 @@ myApp.controller('adminController', ['$scope', 'action', 'timeEntry', 'snackbar'
                         $scope.backdateEntry = {};
                         $scope.showEntries = true;
                         snackbar.create("Entry added and mail sent.", 1000);
+                    });
+                }
+            },
+            deleteBackDate: function() {
+                var r = confirm("This will delete the backdate entry . Ok?");
+                if (r === true) {
+                    timeFactory.deleteBackDate($routeParams.id).success(function(response) {
+                        $location.path('/manage/back-date-entry');
+                        snackbar.create("Backdate deleted", 1000);
                     });
                 }
             }

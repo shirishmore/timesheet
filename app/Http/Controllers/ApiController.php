@@ -9,6 +9,8 @@ use App\Project;
 use App\Services\Interfaces\SendMailInterface;
 use App\TimeEntry;
 use App\User;
+use App\Backdate_Timeentry;
+use App\Backdate_Request;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -299,16 +301,31 @@ class ApiController extends Controller
 
     public function getBackDateEntries()
     {
-        $timeEntryObj = new TimeEntry;
-
+        $timeEntryObj = new Backdate_Timeentry;
         $backdate_entries = $timeEntryObj->getLatestBackdateTimeEntries();
 
         return response($backdate_entries, 200);
     }
 
+    public function getBackDateEntryById($id)
+    {
+        $timeEntryObj = new Backdate_Timeentry;
+        $backdate_entry_by_id = $timeEntryObj->getBackDateEntryById($id);
+
+        return response($backdate_entry_by_id, 200);
+    }
+    public function deleteBackDateById(Request $request)
+    {
+
+        $backdate_timeentry = Backdate_Timeentry::findOrFail($request->input('id'));
+        $backdate_timeentry->delete();
+
+        return response('Backdate Timeentry deleted', 200);
+    }
+
     public function getRequestBackDateEntries()
     {
-        $timeEntryObj = new TimeEntry;
+        $timeEntryObj = new Backdate_Request;
 
         $request_backdate_entries = $timeEntryObj->getLatestRequestBackdateTimeEntries();
 
@@ -317,9 +334,19 @@ class ApiController extends Controller
 
     public function getRequestBackDateEntryById($id)
     {
-        //return Project::with('backdate_requests')->with('users')->orderBy('name')->get();
-        return DB::table('backdate_requests')->where('id','=',$id)->get();
+        $timeEntryObj = new Backdate_Request;
+        $request_backdate_entry_by_id = $timeEntryObj->getRequestBackDateEntryById($id);
+        return response($request_backdate_entry_by_id, 200);
     }
+
+    public function deleteRequestBackDateById(Request $request)
+    {
+        $backdate_request = Backdate_Request::findOrFail($request->input('id'));print_r($backdate_request);die;
+        $backdate_request->delete();
+
+        return response('Requested Backdate deleted', 200);
+    }
+
 
     public function allowBackdateEntry(Request $request, SendMailInterface $mail)
     {
@@ -381,15 +408,11 @@ class ApiController extends Controller
             ]);
         }
 
-        $timeEntryObj = new TimeEntry;
+        $timeEntryObj = new Backdate_Timeentry;
 
         $backdate_entries = $timeEntryObj->getLatestBackdateTimeEntries();
 
         return response($backdate_entries, 200);
-    }
-
-    public function getBackDateEntryById($id)
-    {
     }
 
     public function allowRequestBackdateEntry(Request $request, SendMailInterface $mail)
@@ -454,7 +477,7 @@ class ApiController extends Controller
             ]);
         }
 
-        $timeEntryObj = new TimeEntry;
+        $timeEntryObj = new Backdate_Request;
 
         $request_backdate_entries = $timeEntryObj->getLatestRequestBackdateTimeEntries();
 

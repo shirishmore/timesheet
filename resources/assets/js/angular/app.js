@@ -141,27 +141,14 @@ myApp.config(['$routeProvider', '$locationProvider',
             templateUrl: '/templates/admin/view-backdateentry.html',
             controller: 'adminController',
             resolve: {
-                action: function(userFactory, timeEntry) {
+                action: function(userFactory, timeEntry,$route) {
                     return {
-                        users: userFactory.getUserList(),
-                        allEntries: timeEntry.getBackDateEntries()
+                        singleBackDateEntry: timeEntry.getBackDateEntriesById($route.current.params.backdateentryId)
                     };
                 }
             }
         });
 
-        $routeProvider.when('/manage/view-back-date-entry/:backdateentryId', {
-            templateUrl: '/templates/admin/view-backdateentry.html',
-            controller: 'adminController',
-            resolve: {
-                action: function(userFactory, timeEntry) {
-                    return {
-                        users: userFactory.getUserList(),
-                        allEntries: timeEntry.getBackDateEntries()
-                    };
-                }
-            }
-        });
 
         $routeProvider.when('/user/request-backdate-entry', {
             templateUrl: '/templates/users/request-backdate.html',
@@ -183,7 +170,7 @@ myApp.config(['$routeProvider', '$locationProvider',
             resolve: {
                 action: function(userFactory, timeEntry,$route) {
                     return {
-                        singleEntry: timeEntry.getRequestBackDateEntriesById($route.current.params.backdateentryId)
+                        singleRequestBackdateEntry: timeEntry.getRequestBackDateEntriesById($route.current.params.backdateentryId)
 
                     };
                 }

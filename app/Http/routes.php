@@ -82,8 +82,10 @@ Route::group(['middleware' => 'auth'], function () {
         get('get-backdate-entries', 'ApiController@getBackDateEntries');
         post('allow-backdate-entry', 'ApiController@allowBackdateEntry');
         get('get-backdate-entry/{id}', 'ApiController@getBackDateEntryById');
+        post('delete-backdate', 'ApiController@deleteBackDateById');
         get('get-request-backdate-entries', 'ApiController@getRequestBackDateEntries');
         get('get-request-backdate-entries-by-id/{id}', 'ApiController@getRequestBackDateEntryById');
+        post('delete-request-backdate', 'ApiController@deleteRequestBackDateById');
         post('allow-request-backdate-entry', 'ApiController@allowRequestBackdateEntry');
     });
 

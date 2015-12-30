@@ -32,6 +32,10 @@ myApp.factory('timeEntry', ['$http', function($http) {
         return $http.get(baseUrl + 'api/get-backdate-entries');
     }
 
+    timeEntry.getBackDateEntriesById = function(id) {
+        return $http.get(baseUrl + 'api/get-backdate-entry/' + id);
+    }
+
     timeEntry.saveBackDateEntry = function(entryData) {
         return $http({
             headers: {
@@ -59,6 +63,31 @@ myApp.factory('timeEntry', ['$http', function($http) {
             url: baseUrl + 'api/allow-request-backdate-entry',
             method: 'POST',
             data: entryData
+        });
+    }
+    timeEntry.deleteBackDate = function(id) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/delete-backdate',
+            method: 'POST',
+            data: {
+                id: id
+            }
+        });
+    }
+
+    timeEntry.deleteBackDateRequest = function(id) {
+        return $http({
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            url: baseUrl + 'api/delete-request-backdate',
+            method: 'POST',
+            data: {
+                id: id
+            }
         });
     }
 

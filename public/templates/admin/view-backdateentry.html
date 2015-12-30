@@ -5,3 +5,27 @@
         <h3>Backdate entry</h3>
     </div>
 </div>
+
+<div class="row">{{ singleBackdateEntry }}
+    <div class="col-sm-12 jumbotron">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td align="center"><strong>User</strong></td>
+                <td align="center"><strong>Back Date</strong></td>
+                <td align="center"><strong>Status</strong></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td align="center">{{ singleBackDateEntry[0].name }}</td>
+                <td align="center">{{ singleBackDateEntry[0].backdate }}</td>
+                <td align="center">{{ singleBackDateEntry[0].status}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <a href="#/manage/back-date-entry" class="btn btn-primary">Back</a>
+        <button class="btn btn-warning" ng-click="deleteBackDate()">Delete</button>
+    </div>
+</div>
+
